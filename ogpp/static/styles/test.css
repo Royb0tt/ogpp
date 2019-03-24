@@ -1,0 +1,309 @@
+
+html, body{
+   height: 100%;
+   width: 100%;
+   background-color: #00BFFF;
+}
+
+/*this shame my family*/
+.main-container{
+   text-align: center;
+}
+
+/*Navigation*/
+#page-top{
+   /*position: sticky;
+   position: -webkit-sticky;
+   top: 0;
+   z-index: 5;*/
+   background: #00BFFF;
+   height: 60px;
+}
+
+.nav-ele{
+   display: block;
+   width: 50%;
+   height: 60px;
+}
+
+#nav-left{
+   float: left;
+}
+
+#nav-right{
+   float: right;
+}
+
+#nav-search{
+   float: right;
+   position: relative;
+   right: 20px;
+}
+
+/*Form*/
+
+.submit-button{
+   margin: 0 auto;
+   width: 75px;
+   height: 25px;
+   background: #449eef;
+   text-align: center;
+   border-radius: 5px;
+   color: gray;
+}
+
+/*sidebar content*/
+
+.side-content{
+   position: relative;
+   left: 50px;
+   top: 2px;
+   background-color: green;
+   width: 250px;
+   border: 1px solid black;
+}
+
+.refresh-button{
+   display: block;
+   margin: 0 auto;
+   width: 115px;
+   height: 25px;
+   background: #4E9CAF;
+   padding: 10px;
+   text-align: center;
+   border-radius: 5px;
+   color: white;
+}
+
+.refresh-button a{
+   text-decoration: none !important;
+}
+
+.icon{
+   width: 75px;
+   height: 75px;
+   border: 1px solid black;
+   margin: 0 auto;
+   background-color: #00ff00;
+}
+
+.name-and-level{
+   text-align: center;
+   height:35px;
+   width: 130px;
+   margin: 0 auto;
+   background-color: #f08080;
+   border: 1px solid black;
+}
+
+.player{
+   position: relative;
+   bottom: 15px;
+}
+
+.level{
+   position: relative;
+   bottom: 35px;
+}
+
+.ranking-icon{
+   margin: 0 auto;
+   width: 100px;
+   height: 100px;
+   border: 1px solid black;
+   background-color: #e9967a;
+}
+
+.rank-and-points{
+   margin: 0 auto;
+   text-align: center;
+   border: 1px solid black;
+   width: 100px;
+   height: 32px;
+   background-color: #ff7f50;
+}
+
+.rank{
+   position: relative;
+   bottom: 17px
+}
+.points{
+   position: relative;
+   bottom: 39px;
+}
+
+.champion-portrait{
+   display: table-cell;
+   width: 65px;
+   height: 65px;
+   border: 1px solid black;
+   margin: 0 auto;
+   background-color: #7b68ee;
+}
+
+.numerical-statistics{
+   display: table-cell;
+   border: 1px solid black;
+   width: 185px;
+   margin: 0 auto;
+   background-color: #ffdead;
+}
+
+/*main content*/
+
+.main-content{
+   background-color: #00ffff;
+   position: relative;
+   left: 320px;
+   bottom: 500px;
+   width: 1500px;
+   padding: 10px;
+}
+
+.match-box{
+   position: relative;
+   bottom: 55px;
+   margin: 0 auto;
+   margin-bottom: 10px;
+   width: 1450px;
+   height: 275px;
+   background-color: #0ebaaa;
+   padding: 10px;
+}
+
+.blueteam-container{
+   height: 240px;
+   width: 700px;
+   background: #4295f4;
+   float: left;
+   padding: 1px;
+}
+
+.redteam-container{
+   height: 240px;
+   width: 700px;
+   background: #f4426e;
+   padding: 1px;
+   float: right;
+}
+
+.player-stat{
+   width: 690px;
+   margin: 0 auto;
+   padding: 2px;
+   position: relative;
+   top: 7px;
+   height: 40px;
+   overflow: hidden;
+}
+
+/* Block Items */
+.table-block{
+   display: table-cell;
+   max-height: 50px;
+}
+
+.table-block p{
+   word-wrap: break-word;
+   font-size: 12px;
+}
+
+.champ-level{
+   width: 45px;
+   background: #42f4e5;
+}
+
+.champ-level p{
+   font-weight: bold;
+}
+
+.champ-icon{
+   width: 40px;
+   background-color: black;
+   margin: 0 auto;
+}
+
+.summoner-spell{
+   width: 40px;
+   margin: 0 auto;
+   background: black;
+}
+
+.player-name{
+   margin: 0 auto;
+   width: 120px;
+   background: #42f4e5;
+}
+
+.player-name a, p{
+   text-decoration: none !important;
+   word-break: break-all;
+}
+
+.player-rank{
+   margin: 0 auto;
+   width: 100px;
+   background: #42bee4;
+}
+
+.item{
+   width: 40px;
+   background: black;
+   margin: 0 auto;
+}
+
+.hide-desc{
+   visibility: hidden;
+   width: 120px;
+   background-color: black;
+   color: #fff;
+   text-align: center;
+   padding: 5px 0;
+   /*pos*/
+   position: absolute;
+   z-index: 1;
+   bottom: 100%;
+   left: 50%;
+   margin-left: -60px;
+}
+
+.item:hover .hide-desc{
+   visibility: visible;
+}
+
+
+.ingame-kda{
+   width: 59px;
+   background: #5942f4;
+   margin: 0 auto;
+}
+
+.match-date-text{
+   float: left;
+}
+
+.victory-text{
+   float: right;
+}
+
+#win{
+   color: blue;
+}
+
+#loss{
+   color: red;
+}
+
+#paginate-container{
+   margin: 0 auto;
+   width: 500px;
+}
+
+.paginate{
+   display: inline-block;
+   width: 50px;
+}
+
+.paginate a, .paginate p{
+   font-size: 25px;
+}

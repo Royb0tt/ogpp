@@ -1,0 +1,12 @@
+*.pyc
+__pycache/
+*.db
+*.bak
+*.dat
+*.dir
+migrations/
+test/
+venv/
+ogpp/static/img
+ogpp/infod.py
+ogpp/get_tasks.py

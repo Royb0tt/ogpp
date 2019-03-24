@@ -1,0 +1,36 @@
+<!--
+{% if prev_url %}
+  <div class="paginate">
+    <a href="{{ prev_url }}">Prev Matches</a> 
+  </div>
+{% endif %}
+{% if next_url %}
+  <div class="paginate">
+    <a href="{{ next_url }}">More Matches</a>
+  </div>
+{% endif %}
+-->
+
+<div id="paginate-container">
+  {% if page_urls %}
+    <span class="paginate">
+      <a href="{{ page_urls.first }}">First Page</a>
+    </span>
+    {% if page_urls.page_list %}
+      {% for i, link in page_urls.page_list %}
+        {% if link == 'CURRENT' %}
+          <span class="paginate">
+            <p>{{ i }}</p>
+          </span>
+        {% else %}
+          <span class="paginate">
+            <a href="{{ link }}">{{ i }}</a>
+          </span>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    <span class="paginate">
+      <a href="{{ page_urls.last }}">Last Page</a>
+    </span>
+  {% endif %}
+</div>

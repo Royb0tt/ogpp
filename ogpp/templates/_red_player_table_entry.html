@@ -1,0 +1,37 @@
+<div class="player-stat">
+  {% for item in player.items %}
+    <div class="table-block item">
+      <img src="{{ url_for('static', filename='img/item/'+ item + '.png') }}"
+        width="40" height="40">
+      <span class="hide-desc">Hi testing visibility</span>
+    </div>
+  {% endfor %}
+  <div class="table-block ingame-kda">
+    <p style="position: relative; bottom: 25px">{{ player.kda }}</p>
+    <p style="position: relative; bottom: 40px">KDA</p>
+    <p style="position: relative; bottom: 55px">{{ player.avg_kda }}</p>
+  </div>
+  <div class="table-block player-rank">
+    <p style="position: relative; bottom: 10px">{{ player.current_rank }}</p>
+  </div>
+  <div class="table-block player-name">
+    <a href="{{ url_for('summoner', name=player.name) }}">
+      <p style="position: relative; bottom: 15px;"> {{ player.name }}</p>
+    </a>
+  </div>
+  <div class="table-block summoner-spell">
+    <img src="{{ url_for('static', filename='img/sspells/' + player.spell2 + '.png') }}"
+      width="40" height="40">
+  </div>
+  <div class="table-block summoner-spell">
+    <img src="{{ url_for('static', filename='img/sspells/' + player.spell1 + '.png') }}"
+      width="40" height="40">
+  </div>
+  <div class="table-block champ-icon">
+    <img src="{{ url_for('static', filename='img/champion/' + player.champion_played + '.png') }}"
+      width="40" height="40">
+  </div>
+  <div class="table-block champ-level">
+    <p style="position: relative; bottom: 20px">Level {{ player.champion_level }}</p>
+  </div>
+</div>

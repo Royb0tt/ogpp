@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/test.css') }}">
+    {% if title %}
+      {% block title %}<title>{{ title }}</title>{% endblock %} 
+    {% else %}
+      <title>Welcome to OGPP! The LoL Old Games & Player Profiles Database!</title>
+    {% endif %}
+  </head>
+    <body>
+      <div id="page-top">
+        <span class="nav-ele" id="nav-left">
+          {% if index %}
+            <p>Index Nav here</p>
+          {% else %}
+            <a href="{{ url_for('index') }}">Go Home</a>
+          {% endif %}
+        </span>
+        <span class="nav-ele" id="nav-right">
+          <div id="nav-search">
+            {% if index %}
+              <p> Index Nav here</p>
+            {% else %}
+              <form action="" method="post" novalidate>
+                {{ form.hidden_tag() }}
+                <p style="text-align; right;">
+                {{ form.summoner(size=35, placeholder="Enter a player name here") }}
+                {{ form.submit(class_='submit-button') }}
+                </p>
+            </form> 
+          {% endif %}
+          </div>
+        </span>
+
+      </div>
+       <hr>
+        
+    {% block content %}{% endblock %}
+    </body>
+</html>
