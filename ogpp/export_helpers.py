@@ -97,12 +97,9 @@ def make_matches_exportable(matches, summoner_name):
         # get team sides
         m.blue_side = get_team(m.players, side_id=100)
         m.red_side = get_team(m.players, side_id=200)
-<<<<<<< HEAD
         m.queue_type = QUEUE_TYPE[match.game_mode]
-=======
 
         m.queue_type = match.queue_type
->>>>>>> nav_feature
 
         m.win = is_win_or_loss(match, summoner_name)
 
