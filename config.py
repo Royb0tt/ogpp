@@ -12,4 +12,4 @@ class Config:
 
     SECRET_KEY = 'not-very-secret'
 
-    RIOT_API_KEY = 'secret'
+    RIOT_API_KEY = os.environ.get('RIOT_API_KEY') or None
