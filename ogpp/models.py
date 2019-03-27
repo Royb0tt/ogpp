@@ -39,20 +39,24 @@ class Summoner(db.Model):
         return fmt.format(self)
 
     @property
-    def games_total(self):
+    def ranked_games_total(self):
         return self.wins + self.losses
 
     @property
-    def win_ratio(self):
-        return int((self.wins / self.games_total) * 100)
+    def ranked_win_ratio(self):
+        try:
+            return int((self.wins / self.ranked_games_total) * 100)
+        except ZeroDivisionError:
+            return 100
 
     @property
     def ranked_games(self):
-        ranked_solo = self.match_history.filter_by(
-            game_mode=Q_TYPE['RANKED_SOLO']).all()
-        ranked_flex = self.match.history.filter_by(
-            game_mode=Q_TYPE['RANKED_FLEX']).all()
-        return ranked_solo + ranked_flex
+        valid_queue_types = [Q_TYPE['RANKED_SOLO'], Q_TYPE['RANKED_FLEX']]
+        ranked = self.match_history.filter(
+            MatchByReference.game_mode.in_(valid_queue_types)).order_by(
+            MatchByReference.timestamp.desc())
+
+        return ranked
 
     @property
     def all_games(self):

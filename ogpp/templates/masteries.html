@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <table>
+    <tr>
+      <th style="border: none"></th>
+      <th>Name</th>
+      <th>Mastery Level</th>
+      <th>Points</th>
+    </tr>
+    {% for mastery in masteries %}
+      <tr>
+        <td><img src="{{ url_for('static', filename=mastery.img) }}"
+              height="25", width="25">
+        </td>
+        <td>{{ mastery.champion_name }}</td>
+        <td>{{ mastery.champion_level }}</td>
+        <td>{{ mastery.points }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

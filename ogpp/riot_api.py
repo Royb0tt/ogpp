@@ -1,5 +1,5 @@
-from .game_consts import CHAMPIONS, CHAMPION_BY_ID
-from collections import namedtuple
+from .game_consts import CHAMPION_BY_ID
+
 import requests
 
 '''
@@ -104,8 +104,9 @@ class RiotAPI:
 
         return summoner_data
 
-    def get_match_history_list(self, account_id, end_index=50,
-                               queue_type=None, champion=None):
+    def get_match_history_list(self, account_id, end_index=None,
+                               queue_type=None, champion=None,
+                               season=13):
         '''Get the match history of the current summoner.
         by default, get matches from last 20(end_index param).
         will add more optional parameters in the future maybe.
@@ -122,6 +123,8 @@ class RiotAPI:
             params['champion'] = CHAMPION_BY_ID[champion]
         if queue_type:
             params['queue'] = queue_type
+        if season:
+            params['season'] = season
 
         api_url = URL['match']['history'].format(version=API_VERSION['match_history'],
                                                  encrypted_account_id=account_id)
@@ -144,101 +147,9 @@ class RiotAPI:
         summoner_rank_data = self.get(api_url)
         return summoner_rank_data
 
-    # helper functions
-    @staticmethod
-    def extract_ingame_player_stats(in_game_participant_list, participant_id):
-        '''returns the ingame DTO for the specified participant id.'''
-        me = in_game_participant_list[participant_id - 1]
-        return me
+    def get_summoner_mastery(self, summoner_id):
+        api_url = URL['champion_mastery'].format(version=API_VERSION['champion_mastery'],
+                                                 encrypted_summoner_id=summoner_id)
 
-    @staticmethod
-    def extract_player(participant_id_list, summoner_name):
-        '''searches a list of player-reference dtos for a dto that has the specified summoner_name.
-        we use that dto's participant_id to extract the detailed in-game statistics from another list
-        that we obtain from calling the match_by_id() api.
-        '''
-        for p in participant_id_list:
-            if p['player']['summonerName'] == summoner_name:
-                return p
-
-    def aggregate_ingame_stats(self, match_list, summoner):
-        '''
-        I don't use this anymore.
-        '''
-
-        # this is for calculating how often certain champions are played.
-        # a set of all the unique champion ids from the match list.
-        champions_played = set(match['champion'] for match in match_list)
-
-        # this is a very expensive api call that should be replaced with
-        # a database query instead. for the purpose of testing, I will just
-        # use the api call, but a database implementation should be done asap.
-        # get the matches in detail.
-        matches_in_detail = [self.get_match_history(match['gameId']) for match in match_list]
-
-        # container of all the gamestats.
-        game_stats = []
-
-        # generic container for specific champion played
-        # in which we will be putting the associated data that is collected
-        Champ = namedtuple('Champ', ['name',
-                                     'kills', 'deaths', 'assists', 'effective_kda',
-                                     'played_matches', 'percentage_played'])
-
-        for match in matches_in_detail:
-            # grab the list of participant id dtos
-            participant_ids = match['participantIdentities']
-            # grab the list of detailed in game stats dtos
-            participants = match['participants']
-
-            # get the desired summoner from both of these lists
-            this_summoner = RiotAPI.extract_player(participant_ids, summoner['name'])
-            their_stats = RiotAPI.extract_ingame_player_stats(participants,
-                                                              this_summoner['participantId'])
-
-            # accumulate them into the game_stats container
-            game_stats.append(their_stats)
-
-        output = []
-
-        # now do stuff to the data
-
-        amt_total_matches = len(match_list)
-
-        for champ in champions_played:
-            played_matches = [stats for stats in game_stats if stats.get('championId') == champ]
-            total_games = len(played_matches)
-            kills = 0
-            deaths = 0
-            assists = 0
-
-            for stats in played_matches:
-                relavant_dto = stats['stats']
-
-                # accumulate the kdas for the champion
-                kills += relavant_dto['kills']
-                deaths += relavant_dto['deaths']
-                assists += relavant_dto['assists']
-
-                # i plan to collect more data such as items purchased but for now we start small.
-
-            kill_average = kills / total_games
-            death_average = deaths / total_games
-            assist_average = assists / total_games
-            try:
-                effective_kda = (kill_average + assist_average) / death_average
-            except ZeroDivisionError:
-                effective_kda = kill_average + assist_average
-
-            percentage_played = (total_games / amt_total_matches) * 100
-
-            actual_champion_name = CHAMPIONS[champ]
-
-            output.append(Champ(actual_champion_name, kill_average,
-                                death_average, assist_average,
-                                effective_kda,
-                                total_games, percentage_played))
-
-        output = sorted(output, key=lambda champ: champ.played_matches)
-        output.reverse()
-        return output
+        mastery_list = self.get(api_url)
+        return mastery_list

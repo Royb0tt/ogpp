@@ -5,8 +5,8 @@ from ogpp.game_consts import CHAMPIONS
 from ogpp.db_helpers import (grab_summoner, get_match_history, get_match_stats,
                              populate_match_history, update_match_history,
                              update_summoner_info)
-from ogpp.export_helpers import make_matches_exportable, most_played_champs, paginate
-from ogpp.infod import update_info
+from ogpp.export_helpers import make_matches_exportable, get_ranked_champs, paginate
+from ogpp.infod import update_info, crawl_site
 
 import shelve
 import pprint
@@ -115,9 +115,10 @@ def make_shell_context():
         'unique_player_count': unique_player_count,
         'update_match_history': update_match_history,
         'update_summoner_info': update_summoner_info,
-        'most_played_champs': most_played_champs,
+        'get_ranked_champs': get_ranked_champs,
         'update_info': update_info,
         'check_player_cache': check_player_cache,
         'dump_cache_contents': dump_cache_contents,
-        'paginate': paginate
+        'paginate': paginate,
+        'crawl_site': crawl_site
     }

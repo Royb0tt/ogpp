@@ -1,16 +1,8 @@
 '''functions that help store information retrieved
    from the web api to the database.
-    About imports:
-        -functools.wraps helps preserve function signature
-         when creating a custom decorator
-        -types.SimpleNamespace helps make json object access easier
-
-    Other notes:
-        -it seems calculating player rank on the fly is very slow,
-         might just save it as a function for when you land on a player's page
 
     TODO: refector get_highest_rank() as it only picks up a single rank now
-    TODO: test new update functions (update_match_history, update_summoner_info)
+    TODO: make page that shows win percentage of champion played by all players
 '''
 from functools import wraps
 from types import SimpleNamespace
@@ -114,7 +106,11 @@ def populate_match_history(summoner):
     match_history = game_api.get_match_history_list(summoner.account_id)['matches']
     for match in match_history:
         m = serialize_matchref_to_db(match, summoner)
-        db.session.add(m)
+        add_matchref_to_db(m)
+
+
+def add_matchref_to_db(match_ref):
+    db.session.add(match_ref)
     db.session.commit()
 
 

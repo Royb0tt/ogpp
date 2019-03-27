@@ -114,6 +114,10 @@ html, body{
    background-color: #e9967a;
 }
 
+.ranking-icon p{
+   line-height: .1;
+}
+
 .rank-and-points{
    margin: 0 auto;
    text-align: center;
@@ -130,6 +134,11 @@ html, body{
 .points{
    position: relative;
    bottom: 39px;
+}
+
+.per-champion-info{
+   height: 65px;
+   overflow: hidden;
 }
 
 .champion-portrait{
@@ -149,20 +158,44 @@ html, body{
    background-color: #ffdead;
 }
 
+.ns-text{
+   font-size: 13px;
+   line-height: .1;
+   position: relative;
+   bottom: 50px;
+}
+
 /*main content*/
 
 .main-content{
    background-color: #00ffff;
    position: relative;
    left: 320px;
-   bottom: 500px;
+   bottom: 635px;
    width: 1500px;
    padding: 10px;
 }
 
+#content-tabs{
+   height: 25px;
+   position: relative;
+   left: 20px;
+   text-align: left;
+}
+
+.tab-choice{
+   text-align: left;
+   display: inline-block;
+}
+
+.tab-right{
+   float: right;
+   position: relative;
+   right: 40px;
+}
+
 .match-box{
    position: relative;
-   bottom: 55px;
    margin: 0 auto;
    margin-bottom: 10px;
    width: 1450px;
@@ -306,4 +339,9 @@ html, body{
 
 .paginate a, .paginate p{
    font-size: 25px;
+}
+
+table, td, th {
+  border: 1px solid black;
+  text-align: center;
 }

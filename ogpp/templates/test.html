@@ -38,14 +38,23 @@
   </div>
 
   <div class="main-content">
-
     <div id="content-tabs">
-      <span>Filter By:</span>
+      <span>Filter By Game Mode:</span>
       <span class="tab-choice tab-left">
         <a href="{{ url_for('summoner', name=summoner.name) }}">All Games</a>
       </span>
       <span class="tab-choice tab-left">
         <a href="{{ url_for('ranked_games', name=summoner.name) }}">Ranked Games</a>
+      </span>
+      <span class="tab-choice tab-left">
+        <form action="" method="post" novalidate>
+          {{ champ_form.hidden_tag() }}
+          <span>{{ champ_form.champions.label }}:</span>
+          <span>
+            {{ champ_form.champions() }}
+            {{ champ_form.submit() }}
+          </span>
+        </form>
       </span>
       <span class="tab-choice tab-right">
         <a href="{{ url_for('masteries', name=summoner.name) }}">View Champion Masteries</a>
