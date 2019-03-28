@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="main-container">
-  <div class="side-content">
+<div id="main-container">
+  <div id="side-container">
+  <div id="sidebar">
     <div class="refresh-button">
       <a href="{{ url_for('refresh', summoner_name=summoner.name) }}">Update Info</a>
     </div>
@@ -17,12 +18,12 @@
     <div class="ranking-icon">
       <p>{{ summoner.rank }}</p>
       <p>{{ summoner.points }}</p>
-      <p>{{ summoner.win_loss }}</p>
-      <p>{{ summoner.win_ratio }}</p>
+      <p>{{ ranked_stats.win_loss }}</p>
+      <p>{{ ranked_stats.win_ratio }}</p>
     </div>
-    <p>Overview of Ranked Champions</p>
-    {% if ranked_champs %}
-      {% for champ in ranked_champs %}
+    {% if ranked_stats.champions %}
+      <p>Overview of Ranked Champions</p>
+      {% for champ in ranked_stats.champions %}
         <div class="per-champion-info">
           <div class="champion-portrait">
             <img src="{{ url_for('static', filename=champ.img) }}" width="65", height="65">
@@ -36,8 +37,10 @@
       {% endfor %}
     {% endif %}
   </div>
+  </div>
 
-  <div class="main-content">
+  <div id="content-container">
+  <div id="main">
 
     <div id="content-tabs">
       <span>Filter By:</span>
@@ -75,6 +78,7 @@
 
     {% include '_paginate_urls.html' %}
 
+  </div>
   </div>
 </div>
 {% endblock %}

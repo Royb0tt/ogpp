@@ -1,13 +1,25 @@
 
 html, body{
    height: 100%;
-   width: 100%;
    background-color: #00BFFF;
 }
 
-/*this shame my family*/
-.main-container{
+#main-container{
    text-align: center;
+   height: 100%;
+}
+
+/* toplevel containers*/
+
+#side-container{
+   width: 300px;
+   display: block;
+   float: left;
+}
+
+#content-container{
+   display: block;
+   float: left;
 }
 
 /*Navigation*/
@@ -54,13 +66,11 @@ html, body{
 
 /*sidebar content*/
 
-.side-content{
-   position: relative;
-   left: 50px;
-   top: 2px;
+#sidebar{
    background-color: green;
    width: 250px;
    border: 1px solid black;
+   margin: 0 auto;
 }
 
 .refresh-button{
@@ -167,13 +177,11 @@ html, body{
 
 /*main content*/
 
-.main-content{
+#main{
    background-color: #00ffff;
-   position: relative;
-   left: 320px;
-   bottom: 635px;
    width: 1500px;
    padding: 10px;
+   margin: 0 auto;
 }
 
 #content-tabs{
@@ -285,20 +293,6 @@ html, body{
    margin: 0 auto;
 }
 
-.hide-desc{
-   visibility: hidden;
-   width: 120px;
-   background-color: black;
-   color: #fff;
-   text-align: center;
-   padding: 5px 0;
-   /*pos*/
-   position: absolute;
-   z-index: 1;
-   bottom: 100%;
-   left: 50%;
-   margin-left: -60px;
-}
 
 .item:hover .hide-desc{
    visibility: visible;

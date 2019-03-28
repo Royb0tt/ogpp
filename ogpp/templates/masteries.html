@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <table>
+  <table style="margin: 0 auto">
     <tr>
       <th style="border: none"></th>
       <th>Name</th>
       <th>Mastery Level</th>
       <th>Points</th>
+      <th>Last Played</th>
     </tr>
     {% for mastery in masteries %}
       <tr>
@@ -16,6 +17,7 @@
         <td>{{ mastery.champion_name }}</td>
         <td>{{ mastery.champion_level }}</td>
         <td>{{ mastery.points }}</td>
+        <td>{{ mastery.last_played }}</td>
       </tr>
     {% endfor %}
   </table>

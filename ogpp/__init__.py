@@ -1,4 +1,5 @@
 from flask import Flask
+from slugify import Slugify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from .riot_api import RiotAPI
@@ -9,6 +10,9 @@ app.config.from_object(Config)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+slug = Slugify(to_lower=True)
+slug.separator = ''
 
 if not app.config['RIOT_API_KEY']:
     print("API key not set. Get a key and set it in the console: $set RIOT_API_KEY=<your-key>")

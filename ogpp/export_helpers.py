@@ -6,10 +6,10 @@
 
 from types import SimpleNamespace
 from flask import url_for
-from .db_helpers import grab_summoner, get_match_stats, populate_match_history
+from .db_helpers import grab_summoner, get_match_stats
 
 from .models import Match, MatchByReference
-from .game_consts import QUEUE_TYPE, CHAMPIONS
+from .game_consts import QUEUE_TYPE, CHAMPIONS, _TEAMS
 from . import app, game_api
 
 
@@ -25,18 +25,21 @@ def generate_summoner_page_context(summoner_name, page, view):
     kwargs = {'name': summoner_name}
 
     summoner = grab_summoner(summoner_name)
-    if summoner.match_history.count() < 1:
-        populate_match_history(summoner)
 
     if view == 'ranked_games':
         match_refs = summoner.match_history.filter(
-            MatchByReference.game_mode.in_([440, 420])).order_by(
-            MatchByReference.timestamp.desc()).paginate(
-            page, app.config['POSTS_PER_PAGE'], False)
+            MatchByReference.game_mode.in_([440, 420])
+        ).order_by(
+            MatchByReference.timestamp.desc()
+        ).paginate(
+            page, app.config['POSTS_PER_PAGE'], False
+        )
     else:  # default get all game types
         match_refs = summoner.match_history.order_by(
-            MatchByReference.timestamp.desc()).paginate(
-            page, app.config['POSTS_PER_PAGE'], False)
+            MatchByReference.timestamp.desc()
+        ).paginate(
+            page, app.config['POSTS_PER_PAGE'], False
+        )
 
     matches = get_match_stats(match_refs, page)
     matches = make_matches_exportable(matches, summoner.name)
@@ -45,7 +48,7 @@ def generate_summoner_page_context(summoner_name, page, view):
 
     page_items = SimpleNamespace()
 
-    page_items.ranked_champs = get_ranked_champs(summoner)
+    page_items.ranked_stats = get_ranked_stats(summoner)
     page_items.summoner = make_summoner_exportable(summoner)
     page_items.matches = matches
     page_items.page_urls = paginate(match_refs, view, **kwargs)
@@ -125,8 +128,8 @@ def make_matches_exportable(matches, summoner_name):
         m.players = match.players
         m.date = match.date
         # get team sides
-        m.blue_side = get_team(m.players, side_id=100)
-        m.red_side = get_team(m.players, side_id=200)
+        m.blue_side = get_team(m.players, side_id=_TEAMS['blue'])
+        m.red_side = get_team(m.players, side_id=_TEAMS['red'])
         m.queue_type = QUEUE_TYPE[match.game_mode]
 
         m.queue_type = match.queue_type
@@ -141,7 +144,7 @@ def make_exportable_top_champ(champ_name, win_rate, avg_kda, amt_played):
     num_fmt = '{:.2f}'
     champ = SimpleNamespace()
     champ.name = champ_name
-    champ.win_rate = num_fmt.format(win_rate * 100) + '%'
+    champ.win_rate = num_fmt.format(win_rate * 100) + '% Winrate'
     champ.avg_kda = num_fmt.format(avg_kda)
     champ.total_played = amt_played
     champ.img = 'img/champion/{}.png'.format(champ_name)
@@ -162,7 +165,7 @@ def is_win_or_loss(match, summoner_name):
         return 'Victory'
 
 
-def get_ranked_champs(summoner):
+def get_ranked_stats(summoner):
     '''
     get a summoner's 5 most played ranked champions, if any.
     returns data to be displayed on the summoner page side bar.
@@ -171,16 +174,34 @@ def get_ranked_champs(summoner):
     champions_played = set(match.champion_played for match in games)
     ranked_champions = []
 
+    def match_query(m):
+        return Match.query.filter_by(match_id=m.match_id).first()
+
+    total_wins = 0
+    games_total = 0
+
     for champ in champions_played:
-        all_played_matches = [match for match in games if match.champion_played == champ]
-        total_played = len(all_played_matches)
+        # match references
+        all_played_matches = [
+            match
+            for match in games
+            if match.champion_played == champ
+        ]
+        # query-able rows from Match table
+        queried_matches = [
+            match_query(match)
+            for match in all_played_matches
+            if match_query(match) is not None
+        ]
+
+        total_played = len(queried_matches)
 
         total_avg_kdas = 0
         wins = 0
 
-        for match in all_played_matches:
-            m = Match.query.filter_by(match_id=match.match_id).first()
-            if m is None:
+        for match in queried_matches:
+            # m = Match.query.filter_by(match_id=match.match_id).first()
+            # if m is None:
                 # this will be questionable
                 # it must be worth deciding if its better
                 # to calculate this all at once or on the fly
@@ -188,16 +209,23 @@ def get_ranked_champs(summoner):
                 # on the fly.
                 # m = game_api.get_match_stats(match.match_id)
                 # m = add_match_to_db(m, match.timestamp)
-                continue
-            player_instance = m.participants.filter_by(
+                # continue
+            player_instance = match.participants.filter_by(
                 name=summoner.name).first()
             total_avg_kdas += player_instance.avg_kda
 
             if player_instance.win:
+                total_wins += 1
                 wins += 1
 
-        effective_kda = total_avg_kdas / total_played
-        win_rate = wins / total_played
+        try:
+            effective_kda = total_avg_kdas / total_played
+        except ZeroDivisionError:
+            effective_kda = total_avg_kdas
+        try:
+            win_rate = wins / total_played
+        except ZeroDivisionError:
+            win_rate = 0
 
         exportable_champion = make_exportable_top_champ(
             champ,
@@ -208,11 +236,21 @@ def get_ranked_champs(summoner):
 
         ranked_champions.append(exportable_champion)
 
+        games_total += total_played
+
     ranked_champions.sort(key=lambda c: c.total_played)
     ranked_champions.reverse()
 
-    # get only the top 5 at most
-    return ranked_champions[:5]
+    ranked_items = SimpleNamespace()
+    # get on only the top 5 at most
+    ranked_items.champions = ranked_champions[:5]
+    ranked_items.win_loss = '{}W/{}L'.format(total_wins, games_total - total_wins)
+    try:
+        ranked_items.win_ratio = '{}% Winrate'.format(int((total_wins / games_total) * 100))
+    except ZeroDivisionError:
+        ranked_items.win_ratio = ''
+
+    return ranked_items
 
 
 def get_champion_masteries(summoner_name):
@@ -227,6 +265,22 @@ def get_champion_masteries(summoner_name):
         m.champion_name = CHAMPIONS[mastery['championId']]
         m.points = mastery['championPoints']
         m.img = 'img/champion/{}.png'.format(CHAMPIONS[mastery['championId']])
+        m.last_played = last_recently_played(summoner, m.champion_name)
         out.append(m)
 
     return out
+
+
+def last_recently_played(summoner, champ_name):
+    most_recent = MatchByReference.query.filter_by(
+        summoner_context=summoner, champion_played=champ_name
+    ).order_by(
+        MatchByReference.timestamp.desc()
+    ).first()
+
+    if most_recent is None:
+        last_played = "N/A"
+    else:
+        last_played = most_recent.date
+
+    return last_played

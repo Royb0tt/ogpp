@@ -48,6 +48,7 @@ def grab_summoner(name):
         s = game_api.grab_summoner(name)
         summoner = serialize_summoner_to_db(s, indexed_name)
         add_summoner_to_db(summoner)
+        populate_match_history(summoner)
 
     return summoner
 
@@ -97,7 +98,8 @@ def serialize_summoner_to_db(summoner, indexed_name):
                         points=rank.leaguePoints,
                         wins=rank.wins, losses=rank.losses,
                         ranked_mode=rank.queueType,
-                        position=rank.position)
+                        position=rank.position
+                        )
     return summoner
 
 
@@ -112,25 +114,6 @@ def populate_match_history(summoner):
 def add_matchref_to_db(match_ref):
     db.session.add(match_ref)
     db.session.commit()
-
-
-@wrap_database_action
-def get_match_history(summoner):
-    '''
-    DEPRECATED
-    Due to the necessity for paginating database results on the application,
-    this function is considered deprecated now.
-
-    Use populate_match_history() instead.
-    '''
-    matches = summoner.match_history.all()
-    if not matches:
-        for match in game_api.get_match_history_list(summoner.account_id)['matches']:
-            m = serialize_matchref_to_db(match, summoner)
-            db.session.add(m)
-            matches.append(m)
-        db.session.commit()
-    return matches
 
 
 @wrap_database_action

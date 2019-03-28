@@ -2,11 +2,11 @@
 from ogpp import app, db, game_api
 from ogpp.models import Summoner, MatchByReference, Match, Player
 from ogpp.game_consts import CHAMPIONS
-from ogpp.db_helpers import (grab_summoner, get_match_history, get_match_stats,
+from ogpp.db_helpers import (grab_summoner, get_match_stats,
                              populate_match_history, update_match_history,
                              update_summoner_info)
-from ogpp.export_helpers import make_matches_exportable, get_ranked_champs, paginate
-from ogpp.infod import update_info, crawl_site
+from ogpp.export_helpers import make_matches_exportable, get_ranked_stats, paginate
+from ogpp.infod import update_summoners, crawl_site, populate_match_table
 
 import shelve
 import pprint
@@ -82,6 +82,20 @@ def remove_duplicate_matchref_entries(summoner):
             db.session.commit()
 
 
+def find_duplicate_matches():
+    '''
+    find duplicate Match entries
+    '''
+    q = Match.query.all()
+    m = [
+        match
+        for match in q
+        if Match.query.filter_by(match_id=match.match_id).count() > 1
+    ]
+
+    return m
+
+
 def check_player_cache(player_name):
     with shelve.open('dcache') as d:
         return player_name in d
@@ -103,7 +117,6 @@ def make_shell_context():
         'api': game_api,
         'champs': CHAMPIONS,
         'grab_summoner': grab_summoner,
-        'get_match_history': get_match_history,
         'get_match_stats': get_match_stats,
         'tear_down_db': tear_down_db,
         'is_populated': is_populated,
@@ -115,10 +128,11 @@ def make_shell_context():
         'unique_player_count': unique_player_count,
         'update_match_history': update_match_history,
         'update_summoner_info': update_summoner_info,
-        'get_ranked_champs': get_ranked_champs,
-        'update_info': update_info,
+        'get_ranked_stats': get_ranked_stats,
+        'update_summoners': update_summoners,
         'check_player_cache': check_player_cache,
         'dump_cache_contents': dump_cache_contents,
         'paginate': paginate,
-        'crawl_site': crawl_site
+        'crawl_site': crawl_site,
+        'populate_match_table': populate_match_table
     }

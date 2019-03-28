@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 
-from.game_consts import CHAMPIONS
+from .game_consts import CHAMPIONS
 
 
 class SummonerSearchForm(FlaskForm):

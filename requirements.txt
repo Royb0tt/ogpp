@@ -1,10 +1,12 @@
 alembic==1.0.7
+awesome-slugify==1.6.5
 certifi==2018.11.29
 chardet==3.0.4
 Click==7.0
 Flask==1.0.2
 Flask-Migrate==2.4.0
 Flask-SQLAlchemy==2.3.2
+Flask-WTF==0.14.2
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10
@@ -12,8 +14,11 @@ Mako==1.0.7
 MarkupSafe==1.1.1
 python-dateutil==2.8.0
 python-editor==1.0.4
+regex==2019.3.12
 requests==2.21.0
 six==1.12.0
 SQLAlchemy==1.2.18
+Unidecode==0.4.21
 urllib3==1.24.1
 Werkzeug==0.14.1
+WTForms==2.2.1

@@ -53,8 +53,10 @@ class Summoner(db.Model):
     def ranked_games(self):
         valid_queue_types = [Q_TYPE['RANKED_SOLO'], Q_TYPE['RANKED_FLEX']]
         ranked = self.match_history.filter(
-            MatchByReference.game_mode.in_(valid_queue_types)).order_by(
-            MatchByReference.timestamp.desc())
+            MatchByReference.game_mode.in_(valid_queue_types)
+        ).order_by(
+            MatchByReference.timestamp.desc()
+        )
 
         return ranked
 
