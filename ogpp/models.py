@@ -188,7 +188,7 @@ class Player(db.Model):
     # consider storing the champion as a string instead of it's id.
     champion_played = db.Column(db.String(20))
     champion_level = db.Column(db.Integer)
-    win = db.Column(db.Integer)
+    win = db.Column(db.Boolean)
     team_id = db.Column(db.Integer)         # 100 - blue, 200 - red
     participant_id = db.Column(db.Integer)
 

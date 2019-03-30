@@ -159,7 +159,7 @@ def get_team(players, side_id):
 
 def is_win_or_loss(match, summoner_name):
     player = match.participants.filter_by(name=summoner_name).first()
-    if player.win == 0:
+    if not player.win:
         return 'Defeat'
     else:
         return 'Victory'
