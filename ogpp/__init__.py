@@ -6,14 +6,17 @@ from flask_migrate import Migrate
 from .riot_api import RiotAPI
 from config import Config
 
+import os
 
 slug = Slugify(to_lower=True)
 slug.separator = ''
 
-if not Config.RIOT_API_KEY:
-    print("API key not set. Get a key and set it in the console: $set RIOT_API_KEY=<your-key>")
-else:
-    print("You API key: %s" % Config.RIOT_API_KEY)
+
+if os.environ.get('FLASK_ENV') == 'development':
+    if not Config.RIOT_API_KEY:
+        print("API key not set. Get a key and set it in the console: $set RIOT_API_KEY=<your-key>")
+    else:
+        print("You API key: %s" % Config.RIOT_API_KEY)
 
 game_api = RiotAPI(Config.RIOT_API_KEY)
 
