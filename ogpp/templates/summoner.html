@@ -5,7 +5,7 @@
   <div id="side-container">
   <div id="sidebar">
     <div class="refresh-button">
-      <a href="{{ url_for('refresh', summoner_name=summoner.name) }}">Update Info</a>
+      <a href="{{ url_for('summoner.refresh', name=summoner.name) }}">Update Info</a>
     </div>
     <div class="icon">
       <img src="{{ url_for('static', filename=summoner.profile_icon) }}" 
@@ -45,13 +45,13 @@
     <div id="content-tabs">
       <span>Filter By:</span>
       <span class="tab-choice tab-left">
-        <a href="{{ url_for('summoner', name=summoner.name) }}">All Games</a>
+        <a href="{{ url_for('summoner.summoner', name=summoner.name) }}">All Games</a>
       </span>
       <span class="tab-choice tab-left">
-        <a href="{{ url_for('ranked_games', name=summoner.name) }}">Ranked Games</a>
+        <a href="{{ url_for('summoner.ranked_games', name=summoner.name) }}">Ranked Games</a>
       </span>
       <span class="tab-choice tab-right">
-        <a href="{{ url_for('masteries', name=summoner.name) }}">View Champion Masteries</a>
+        <a href="{{ url_for('summoner.masteries', name=summoner.name) }}">View Champion Masteries</a>
       </span>
     </div>
 

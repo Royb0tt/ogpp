@@ -10,6 +10,8 @@ class Config:
 
     POSTS_PER_PAGE = 5
 
-    SECRET_KEY = 'not-very-secret'
+    SECRET_KEY = os.urandom(16).hex()
 
     RIOT_API_KEY = os.environ.get('RIOT_API_KEY') or None
+
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')

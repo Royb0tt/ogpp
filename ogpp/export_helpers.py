@@ -5,15 +5,15 @@
 '''
 
 from types import SimpleNamespace
-from flask import url_for
+from flask import url_for, current_app
 from .db_helpers import grab_summoner, get_match_stats
 
 from .models import Match, MatchByReference
 from .game_consts import QUEUE_TYPE, CHAMPIONS, _TEAMS
-from . import app, game_api
+# from . import app, game_api
+from . import game_api
 
-
-# blacklist certain properties in the object's __dict__
+# blacklist certain properties in the model object's __dict__
 BLACKLIST = ['_sa_instace_state']
 
 
@@ -26,19 +26,19 @@ def generate_summoner_page_context(summoner_name, page, view):
 
     summoner = grab_summoner(summoner_name)
 
-    if view == 'ranked_games':
+    if view == 'summoner.ranked_games':
         match_refs = summoner.match_history.filter(
             MatchByReference.game_mode.in_([440, 420])
         ).order_by(
             MatchByReference.timestamp.desc()
         ).paginate(
-            page, app.config['POSTS_PER_PAGE'], False
+            page, current_app.config['POSTS_PER_PAGE'], False
         )
     else:  # default get all game types
         match_refs = summoner.match_history.order_by(
             MatchByReference.timestamp.desc()
         ).paginate(
-            page, app.config['POSTS_PER_PAGE'], False
+            page, current_app.config['POSTS_PER_PAGE'], False
         )
 
     matches = get_match_stats(match_refs, page)

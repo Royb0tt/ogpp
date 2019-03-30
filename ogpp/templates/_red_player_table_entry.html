@@ -14,7 +14,7 @@
     <p style="position: relative; bottom: 10px">{{ player.current_rank }}</p>
   </div>
   <div class="table-block player-name">
-    <a href="{{ url_for('summoner', name=player.name) }}">
+    <a href="{{ url_for('summoner.summoner', name=player.name) }}">
       <p style="position: relative; bottom: 15px;"> {{ player.name }}</p>
     </a>
   </div>

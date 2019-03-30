@@ -7,13 +7,15 @@
       <title>Welcome to OGPP! The LoL Old Games & Player Profiles Database!</title>
     {% endif %}
   </head>
-    <body>
+
+  <body>
+
       <div id="page-top">
         <span class="nav-ele" id="nav-left">
           {% if index %}
             <p>Index Nav here</p>
           {% else %}
-            <a href="{{ url_for('index') }}">Go Home</a>
+            <a href="{{ url_for('summoner.index') }}">Go Home</a>
           {% endif %}
         </span>
         <span class="nav-ele" id="nav-right">
@@ -51,5 +53,5 @@
       
     </script>
 
-    </body>
+  </body>
 </html>

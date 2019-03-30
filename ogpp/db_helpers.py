@@ -9,7 +9,8 @@ from types import SimpleNamespace
 from sqlalchemy.exc import DBAPIError
 from .models import Summoner, MatchByReference, Match, Player
 from .game_consts import CHAMPIONS, RANK_DIVISIONS, RANK_TIERS, SUMMONER_SPELLS
-from . import game_api, db
+# from . import game_api, db
+from . import db, game_api
 
 
 def sanitize_name(name):
@@ -166,7 +167,7 @@ def update_summoner_info(summoner):
 
 
 def update_summoner_page(summoner_name):
-    summoner = Summoner.query.filter_by(name=summoner_name).first()
+    summoner = Summoner.query.filter_by(indexed_name=summoner_name).first()
     update_match_history(summoner)
     update_summoner_info(summoner)
 
