@@ -4,9 +4,7 @@
     TODO: refector get_highest_rank() as it only picks up a single rank now
     TODO: make page that shows win percentage of champion played by all players
 '''
-from functools import wraps
 from types import SimpleNamespace
-from sqlalchemy.exc import DBAPIError
 from .models import Summoner, ByReferenceMatch, Match, Player
 from .game_consts import CHAMPIONS, RANK_DIVISIONS, RANK_TIERS, SUMMONER_SPELLS
 # from . import game_api, db
@@ -18,25 +16,6 @@ def sanitize_name(name):
     return name.replace(' ', '').lower()
 
 
-#def wrap_database_action(func):
-#    '''
-#    Rollback the database in the event we catch an error
-#    while performing a database action.
-#    '''
-#    @wraps(func)
-#    def wrapper(*args, **kwargs):
-#        try:
-#            out = func(*args, **kwargs)
-#        except DBAPIError as e:
-#            error_fmt = "Database error: {0.__traceback__}"
-#            print(error_fmt.format(e))
-#            db.session.rollback()
-#            return
-#        return out
-#    return wrapper
-
-
-#@wrap_database_action
 def grab_summoner(name):
     '''
     attempt to pull the summoner from the database, if it exists.
@@ -105,7 +84,6 @@ def serialize_summoner_to_db(summoner, indexed_name):
     return summoner
 
 
-#@wrap_database_action
 def populate_match_history(summoner):
     match_history = game_api.get_match_history_list(summoner.account_id)['matches']
     for match in match_history:
@@ -118,7 +96,6 @@ def add_matchref_to_db(match_ref):
     db.session.commit()
 
 
-#@wrap_database_action
 def update_match_history(summoner):
     '''
     this will be used when we implement a refresh button on the webpage
@@ -183,7 +160,6 @@ def serialize_matchref_to_db(match, summoner):
     return m
 
 
-#@wrap_database_action
 def get_match_stats(matches, page_num=1):
     '''
     attempt to get a match and it's participants in detail from the database.
@@ -211,7 +187,6 @@ def get_match_stats(matches, page_num=1):
     return match_with_stats
 
 
-#@wrap_database_action
 def add_match_to_db(match, match_timestamp):
     match = SimpleNamespace(**match)
     m = Match(match_id=match.gameId, game_mode=match.queueId,

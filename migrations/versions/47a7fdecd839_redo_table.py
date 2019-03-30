@@ -1,8 +1,8 @@
-"""change column
+"""redo table
 
-Revision ID: f7983aaefe71
+Revision ID: 47a7fdecd839
 Revises: 
-Create Date: 2019-03-30 07:44:21.317834
+Create Date: 2019-03-30 07:50:41.563113
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f7983aaefe71'
+revision = '47a7fdecd839'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -68,8 +68,8 @@ def upgrade():
     sa.Column('win', sa.Boolean(), nullable=True),
     sa.Column('team_id', sa.Integer(), nullable=True),
     sa.Column('participant_id', sa.Integer(), nullable=True),
-    sa.Column('spell1', sa.Integer(), nullable=True),
-    sa.Column('spell2', sa.Integer(), nullable=True),
+    sa.Column('spell1', sa.String(length=10), nullable=True),
+    sa.Column('spell2', sa.String(length=10), nullable=True),
     sa.Column('item1', sa.String(length=5), nullable=True),
     sa.Column('item2', sa.String(length=5), nullable=True),
     sa.Column('item3', sa.String(length=5), nullable=True),

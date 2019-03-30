@@ -193,8 +193,8 @@ class Player(db.Model):
     participant_id = db.Column(db.Integer)
 
     # summoner spells
-    spell1 = db.Column(db.Integer)
-    spell2 = db.Column(db.Integer)
+    spell1 = db.Column(db.String(10))
+    spell2 = db.Column(db.String(10))
 
     # items
     item1 = db.Column(db.String(5))
