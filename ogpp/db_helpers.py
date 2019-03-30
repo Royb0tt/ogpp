@@ -7,7 +7,7 @@
 from functools import wraps
 from types import SimpleNamespace
 from sqlalchemy.exc import DBAPIError
-from .models import Summoner, MatchByReference, Match, Player
+from .models import Summoner, ByReferenceMatch, Match, Player
 from .game_consts import CHAMPIONS, RANK_DIVISIONS, RANK_TIERS, SUMMONER_SPELLS
 # from . import game_api, db
 from . import db, game_api
@@ -128,7 +128,7 @@ def update_match_history(summoner):
     for match in match_references:
         # once we come across a match that is already in the database
         # we know we're up to date so break from the iteration
-        m = MatchByReference.query.filter_by(summoner_context=summoner,
+        m = ByReferenceMatch.query.filter_by(summoner_context=summoner,
                                              match_id=match['gameId']).first()
         if m:
             break
@@ -175,7 +175,7 @@ def update_summoner_page(summoner_name):
 def serialize_matchref_to_db(match, summoner):
     match = SimpleNamespace(**match)
     time_converted_from_milliseconds = match.timestamp / 1000
-    m = MatchByReference(summoner_context=summoner, match_id=match.gameId,
+    m = ByReferenceMatch(summoner_context=summoner, match_id=match.gameId,
                          lane_played=match.lane, game_mode=match.queue,
                          timestamp=time_converted_from_milliseconds,
                          champion_played=CHAMPIONS[match.champion])

@@ -8,7 +8,7 @@ from types import SimpleNamespace
 from flask import url_for, current_app
 from .db_helpers import grab_summoner, get_match_stats
 
-from .models import Match, MatchByReference
+from .models import Match, ByReferenceMatch
 from .game_consts import QUEUE_TYPE, CHAMPIONS, _TEAMS
 # from . import app, game_api
 from . import game_api
@@ -28,15 +28,15 @@ def generate_summoner_page_context(summoner_name, page, view):
 
     if view == 'summoner.ranked_games':
         match_refs = summoner.match_history.filter(
-            MatchByReference.game_mode.in_([440, 420])
+            ByReferenceMatch.game_mode.in_([440, 420])
         ).order_by(
-            MatchByReference.timestamp.desc()
+            ByReferenceMatch.timestamp.desc()
         ).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False
         )
     else:  # default get all game types
         match_refs = summoner.match_history.order_by(
-            MatchByReference.timestamp.desc()
+            ByReferenceMatch.timestamp.desc()
         ).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False
         )
@@ -272,10 +272,10 @@ def get_champion_masteries(summoner_name):
 
 
 def last_recently_played(summoner, champ_name):
-    most_recent = MatchByReference.query.filter_by(
+    most_recent = ByReferenceMatch.query.filter_by(
         summoner_context=summoner, champion_played=champ_name
     ).order_by(
-        MatchByReference.timestamp.desc()
+        ByReferenceMatch.timestamp.desc()
     ).first()
 
     if most_recent is None:

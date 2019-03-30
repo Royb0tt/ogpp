@@ -27,7 +27,7 @@ class Summoner(db.Model):
     losses = db.Column(db.Integer)
     ranked_mode = db.Column(db.String(20))
 
-    match_history = db.relationship('MatchByReference',
+    match_history = db.relationship('ByReferenceMatch',
                                     backref="summoner_context", lazy='dynamic')
 
     def __repr__(self):
@@ -53,9 +53,9 @@ class Summoner(db.Model):
     def ranked_games(self):
         valid_queue_types = [Q_TYPE['RANKED_SOLO'], Q_TYPE['RANKED_FLEX']]
         ranked = self.match_history.filter(
-            MatchByReference.game_mode.in_(valid_queue_types)
+            ByReferenceMatch.game_mode.in_(valid_queue_types)
         ).order_by(
-            MatchByReference.timestamp.desc()
+            ByReferenceMatch.timestamp.desc()
         )
 
         return ranked
@@ -69,7 +69,7 @@ class Summoner(db.Model):
         return mh
 
 
-class MatchByReference(db.Model):
+class ByReferenceMatch(db.Model):
     '''
     Database model that holds light references to
     access matches in more detail using the api.
@@ -88,7 +88,7 @@ class MatchByReference(db.Model):
     timestamp = db.Column(db.Float)
 
     def __repr__(self):
-        return "MatchByReference<ID: {0.match_id} Type:{0.queue_type}, of {0.summoner_context} playing: {0.champion_played}>".format(self)
+        return "ByReferenceMatch<ID: {0.match_id} Type:{0.queue_type}, of {0.summoner_context} playing: {0.champion_played}>".format(self)
 
     @property
     def date(self):
@@ -113,7 +113,7 @@ class Match(db.Model):
         -It's a general information table. It's purpose is clear
         and it shouldn't be biased towards a single player
         I can query just using a match's id as it is after all
-        lone table with loose reference(same match id in MatchByReference)
+        lone table with loose reference(same match id in ByReferenceMatch)
 
             for match in summoner.match_history.all():
                 Match.query.filter_by(match.match_id)
@@ -125,7 +125,7 @@ class Match(db.Model):
         This can prove to be disadvantageous, the only difference between the
         redundant entries of the same match would be summoner contextual data(summoner id & champ id)
 
-        So it would be fine if MatchByReference had multiple redundant entries
+        So it would be fine if ByReferenceMatch had multiple redundant entries
         as the information they carry is relatively light
         in comparison to the information being stored here.
         Furthermore they are a perfectly intuitive intermediary step for
