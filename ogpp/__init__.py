@@ -31,12 +31,14 @@ def create_app(config=Config):
     migrate.init_app(app, db)
     if app.config['LOG_TO_STDOUT']:
         stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.INFO)
+        stream_handler.setLevel(logging.DEBUG)
         app.logger.addHandler(stream_handler)
 
     from ogpp import routes
     app.register_blueprint(routes.bp)
     app.add_url_rule('/', endpoint='summoner.index')
+
+    app.debug = True
 
     return app
 
