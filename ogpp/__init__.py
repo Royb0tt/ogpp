@@ -38,8 +38,6 @@ def create_app(config=Config):
     app.register_blueprint(routes.bp)
     app.add_url_rule('/', endpoint='summoner.index', methods=['GET', 'POST'])
 
-    app.debug = True
-
     return app
 
 
