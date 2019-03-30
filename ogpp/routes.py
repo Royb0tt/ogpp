@@ -50,7 +50,7 @@ def view_with_search_bar(view):
     @wraps(view)
     def form_provider(*pargs, **kwargs):
         summoner_form = SummonerSearchForm()
-        summoner_view = make_bp_endpoint('summoner')
+        summoner_view = make_bp_endpoint(summoner)
         if summoner_form.validate_on_submit():
             return redirect(url_for(summoner_view, name=summoner_form.summoner.data))
         page = view(*pargs, **kwargs, summoner_form=summoner_form)
