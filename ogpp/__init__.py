@@ -28,7 +28,7 @@ def create_app(config=Config):
     app = Flask(__name__)
     app.config.from_object(config)
     db.init_app(app)
-    migrate.init_app(app db)
+    migrate.init_app(app, db)
     if app.config['LOG_TO_STDOUT']:
         stream_handler = logging.StreamHandler()
         stream_handler.setLevel(logging.INFO)
