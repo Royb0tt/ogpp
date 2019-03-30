@@ -49,6 +49,7 @@ def grab_summoner(name):
         s = game_api.grab_summoner(name)
         summoner = serialize_summoner_to_db(s, indexed_name)
         add_summoner_to_db(summoner)
+        summoner = Summoner.query.filter_by(indexed_name=indexed_name).first()
         populate_match_history(summoner)
 
     return summoner
