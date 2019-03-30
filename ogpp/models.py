@@ -82,7 +82,7 @@ class ByReferenceMatch(db.Model):
     # consider storing the champion played as the name instead of the id
     champion_played = db.Column(db.String(20))
 
-    match_id = db.Column(db.Integer)
+    match_id = db.Column(db.BigInteger)
     # consider storing the game mode as the string representation instead
     game_mode = db.Column(db.Integer)
     timestamp = db.Column(db.Float)
@@ -133,7 +133,7 @@ class Match(db.Model):
         they're tied to the summoner table as match history.
     '''
     id = db.Column(db.Integer, primary_key=True)
-    match_id = db.Column(db.Integer)
+    match_id = db.Column(db.BigInteger)
     # consider storing the game_mode as a string representation
     game_mode = db.Column(db.Integer)
     timestamp = db.Column(db.Float)
