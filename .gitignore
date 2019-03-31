@@ -6,6 +6,7 @@ __pycache/
 *.dir
 test/
 venv/
+ogpp/static/img
 ogpp/infod.py
 ogpp/get_tasks.py
 dev_main.py
