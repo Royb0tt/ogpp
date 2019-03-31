@@ -18,6 +18,8 @@ if os.environ.get('FLASK_ENV') == 'development':
     else:
         print("You API key: %s" % Config.RIOT_API_KEY)
 
+    print('Your secret key: %r' % Config.SECRET_KEY)
+
 game_api = RiotAPI(Config.RIOT_API_KEY)
 
 db = SQLAlchemy()
@@ -35,8 +37,9 @@ def create_app(config=Config):
         app.logger.addHandler(stream_handler)
 
     from ogpp import routes
-    app.register_blueprint(routes.bp)
-    app.add_url_rule('/', endpoint='summoner.index', methods=['GET', 'POST'])
+    app.register_blueprint(routes.summoner_bp)
+    app.register_blueprint(routes.index_bp)
+    app.register_blueprint(routes.leaderboard_bp)
 
     return app
 

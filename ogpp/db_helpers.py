@@ -7,7 +7,6 @@
 from types import SimpleNamespace
 from .models import Summoner, ByReferenceMatch, Match, Player
 from .game_consts import CHAMPIONS, RANK_DIVISIONS, RANK_TIERS, SUMMONER_SPELLS
-# from . import game_api, db
 from . import db, game_api
 
 

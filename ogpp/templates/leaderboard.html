@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <form action="" method="post" novalidate>
+    {{ select_form.hidden_tag() }}
+    <span>{{ select_form.queues.label }}</span>
+    <span>{{ select_form.queues() }}</span>
+    <span>{{ select_form.groups.label }}</span>
+    <span>{{ select_form.groups() }}</span>
+    <span>{{ select_form.submit() }}</span>
+  </form>
+
+  <table style="margin: 0 auto;">
+    <tr>
+      <th>Name</th>
+      <th>Points</th>
+      <th>Wins</th>
+      <th>Losses</th>
+      <th>Winrate</th>
+    </tr>
+    {% for player in data %}
+      <tr>
+        <td><a href"{{ url_for('summoner.summoner', name=player.name)}}">{{ player.name }}</a></td>
+        <td>{{ player.points }}LP</td>
+        <td>{{ player.wins }}</td>
+        <td>{{ player.losses }}</td>
+        <td>{{ player.winrate }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

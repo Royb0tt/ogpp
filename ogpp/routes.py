@@ -11,15 +11,17 @@ import string
 
 from flask import render_template, request, url_for, redirect, Blueprint
 from .db_helpers import update_summoner_page
-from .export_helpers import generate_summoner_page_context, get_champion_masteries
-from .forms import SummonerSearchForm, ChampionSelectForm
+from .export_helpers import generate_summoner_page_context, get_champion_masteries, get_leaderboard_data
+from .forms import SummonerSearchForm, ChampionSelectForm, LeaderboardSelectForm
 from . import slug
 
 
 LANDING_TITLE = 'ogpp: The Old Games & Player Profiles League Database'
 VALID_ASCII = string.printable[:62]
 
-bp = Blueprint('summoner', __name__, url_prefix='/summoner')
+summoner_bp = Blueprint('summoner', __name__, url_prefix='/summoner')
+index_bp = Blueprint('home', __name__)
+leaderboard_bp = Blueprint('leaderboard', __name__, url_prefix='/leaderboard')
 
 
 def make_bp_endpoint(view):
@@ -29,7 +31,7 @@ def make_bp_endpoint(view):
     view -> view function
     return -> str
     '''
-    return '.'.join((bp.name, view.__name__))
+    return '.'.join((summoner_bp.name, view.__name__))
 
 
 def slug_summoner_url(summoner_view):
@@ -58,11 +60,21 @@ def view_with_search_bar(view):
     return form_provider
 
 
-@bp.route('/test/<name>', methods=['GET', 'POST'])
+@summoner_bp.route('/test/<name>', methods=['GET', 'POST'])
 @slug_summoner_url
 @view_with_search_bar
 def test(name, summoner_form):
     page = request.args.get('page', 1, type=int)
+    # instead of using multiple similar functioning views I can probably just generate
+    # all the specific data I need grabbing optional args from the url
+    #
+    # select_form = SummonerSelectForm()
+    # queue_type = request.args.get('queue', 'all', type=str)
+    # champion = request.args.get('champion', 'all', type=str)
+    # if select_form.validate_on_submit():
+    #       queue_type = select_form.queues.data
+    #       champion = select_form.champion.data
+    #       return redirect(url_for('summoner.summoner', ...))
 
     # summoner_form = SummonerSearchForm()
     champ_form = ChampionSelectForm()
@@ -83,7 +95,7 @@ def test(name, summoner_form):
                            ranked_stats=page_items.ranked_stats)
 
 
-@bp.route('/<name>', methods=['GET', 'POST'])
+@summoner_bp.route('/<name>', methods=['GET', 'POST'])
 @slug_summoner_url
 @view_with_search_bar
 def summoner(name, summoner_form):
@@ -100,7 +112,7 @@ def summoner(name, summoner_form):
                            ranked_stats=page_items.ranked_stats)
 
 
-@bp.route('/<name>/ranked_games', methods=['GET', 'POST'])
+@summoner_bp.route('/<name>/ranked_games', methods=['GET', 'POST'])
 @slug_summoner_url
 @view_with_search_bar
 def ranked_games(name, summoner_form):
@@ -117,7 +129,7 @@ def ranked_games(name, summoner_form):
                            ranked_stats=page_items.ranked_stats)
 
 
-@bp.route('/<name>/masteries', methods=['GET', 'POST'])
+@summoner_bp.route('/<name>/masteries', methods=['GET', 'POST'])
 @slug_summoner_url
 @view_with_search_bar
 def masteries(name, summoner_form):
@@ -127,15 +139,32 @@ def masteries(name, summoner_form):
     return render_template('masteries.html', masteries=masteries, form=summoner_form)
 
 
-@bp.route('/<name>/refresh')
+@summoner_bp.route('/<name>/refresh')
 @slug_summoner_url
 def refresh(name):
     update_summoner_page(name)
     return redirect(url_for('summoner.summoner', name=name))
 
 
-@bp.route('/', methods=['GET', 'POST'])
-@bp.route('/home', methods=['GET', 'POST'])
+@leaderboard_bp.route('/', methods=['GET', 'POST'])
+@view_with_search_bar
+def leaderboard(summoner_form):
+    queue_type = request.args.get('queue', 'RANKED_SOLO_5x5', type=str)
+    group_type = request.args.get('group', 'masters', type=str)
+    select_form = LeaderboardSelectForm()
+    if select_form.validate_on_submit():
+        return redirect(url_for('leaderboard.leaderboard',
+                                group=select_form.groups.data,
+                                queue=select_form.queues.data))
+
+    leaderboard_data = get_leaderboard_data(group_type, queue_type)
+
+    return render_template('leaderboard.html', data=leaderboard_data,
+                           form=summoner_form, select_form=select_form)
+
+
+@index_bp.route('/', methods=['GET', 'POST'])
+@index_bp.route('/home', methods=['GET', 'POST'])
 def index():
     form = SummonerSearchForm()
     if form.validate_on_submit():

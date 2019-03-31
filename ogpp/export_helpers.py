@@ -10,7 +10,6 @@ from .db_helpers import grab_summoner, get_match_stats
 
 from .models import Match, ByReferenceMatch
 from .game_consts import QUEUE_TYPE, CHAMPIONS, _TEAMS
-# from . import app, game_api
 from . import game_api
 
 # blacklist certain properties in the model object's __dict__
@@ -40,6 +39,8 @@ def generate_summoner_page_context(summoner_name, page, view):
         ).paginate(
             page, current_app.config['POSTS_PER_PAGE'], False
         )
+
+    # final_query = match_refs.paginate(page, current_app.conf['POSTS_PER_PAGE'])
 
     matches = get_match_stats(match_refs, page)
     matches = make_matches_exportable(matches, summoner.name)
@@ -284,3 +285,24 @@ def last_recently_played(summoner, champ_name):
         last_played = most_recent.date
 
     return last_played
+
+
+def get_leaderboard_data(leaderboard_group, queue_type):
+    leaderboard = game_api.get_leaderboard(leaderboard_group, queue_type)['entries']
+
+    out = []
+    for player in leaderboard:
+        data = SimpleNamespace()
+        data.name = player['summonerName']
+        data.points = player['leaguePoints']
+        data.wins = player['wins']
+        data.losses = player['losses']
+
+        total_games = data.wins + data.losses
+        data.winrate = '{:.2f}%'.format((data.wins / total_games) * 100)
+
+        out.append(data)
+
+    out.sort(key=lambda p: p.points)
+    out.reverse()
+    return out

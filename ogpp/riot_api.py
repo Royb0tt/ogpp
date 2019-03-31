@@ -20,8 +20,14 @@ URL = {
         'history': 'match/v{version}/matchlists/by-account/{encrypted_account_id}',
         'by_id': 'match/v{version}/matches/{match_id}'
     },
-    'summoner_rank': 'league/v{version}/positions/by-summoner/{encrypted_summoner_id}',
+    'league': {
+        'summoner_rank': 'league/v{version}/positions/by-summoner/{encrypted_summoner_id}',
+        'masters': 'league/v{version}/masterleagues/by-queue/{queue}',
+        'grandmasters': 'league/v{version}/grandmasterleagues/by-queue/{queue}',
+        'challengers': 'league/v{version}/challengerleagues/by-queue/{queue}'
+    },
     'champion_mastery': 'champion-mastery/v{version}/champion-masteries/by-summoner/{encrypted_summoner_id}',
+
 }
 
 API_VERSION = {
@@ -29,7 +35,10 @@ API_VERSION = {
     'champion_mastery': '4',
     'match_history': '4',
     'match_by_id': '4',
-    'summoner_rank': '4'
+    'summoner_rank': '4',
+    'masters': '4',
+    'grandmasters': '4',
+    'challengers': '4'
 }
 
 REGIONS = {
@@ -40,22 +49,6 @@ REGIONS = {
 class BadResponse(BaseException):
     '''Raised exception when we get a bad response code from the server'''
     pass
-
-
-# this is useless for the time being in the context of a web application
-# unless I refactor it into something that is more suited to the app.
-def check_response(f):
-    '''decorator function for checking api request calls for bad response codes.
-    for now, anything that doesn't respond with 200 will be interpreted as a bad code
-    and will raise BadResponse.
-    '''
-    def wrapper(*args, **kwargs):
-        try:
-            response = f(*args, **kwargs)
-        except BadResponse as e:
-            return "Response was not okay: {0}".format(str(e))
-        return response
-    return wrapper
 
 
 # The main api.
@@ -134,22 +127,43 @@ class RiotAPI:
 
     def get_match_stats(self, match_id):
         '''api call that returns data of a match in detail'''
-        api_url = URL['match']['by_id'].format(version=API_VERSION['match_by_id'],
-                                               match_id=match_id)
-        match_data = self.get(api_url)
+        api_url = URL['match']['by_id'].format(
+            version=API_VERSION['match_by_id'],
+            match_id=match_id
+        )
 
+        match_data = self.get(api_url)
         return match_data
 
     def get_summoner_ranks(self, summoner_id):
         '''api call which gets a list of all ranked positions for solo/duo.'''
-        api_url = URL['summoner_rank'].format(version=API_VERSION['summoner_rank'],
-                                              encrypted_summoner_id=summoner_id)
+        api_url = URL['league']['summoner_rank'].format(
+            version=API_VERSION['summoner_rank'],
+            encrypted_summoner_id=summoner_id
+        )
+
         summoner_rank_data = self.get(api_url)
         return summoner_rank_data
 
     def get_summoner_mastery(self, summoner_id):
-        api_url = URL['champion_mastery'].format(version=API_VERSION['champion_mastery'],
-                                                 encrypted_summoner_id=summoner_id)
+        api_url = URL['champion_mastery'].format(
+            version=API_VERSION['champion_mastery'],
+            encrypted_summoner_id=summoner_id
+        )
 
         mastery_list = self.get(api_url)
         return mastery_list
+
+    def get_leaderboard(self, leaderboard_type='masters', queue='RANKED_SOLO_5x5'):
+        '''
+        Get leaderboard data from a type of either: masters, grandmasters, or challegers
+        from a choice queue of: RANKED_SOLO_5x5, RANKED_FLEX_SR, or RANKED_FLEX_TT
+        default choices provided are from masters and ranked solor
+        '''
+        api_url = URL['league'][leaderboard_type].format(
+            version=API_VERSION['masters'],
+            queue=queue
+        )
+
+        leaderboard = self.get(api_url)
+        return leaderboard
