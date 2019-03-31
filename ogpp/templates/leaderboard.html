@@ -12,15 +12,17 @@
 
   <table style="margin: 0 auto;">
     <tr>
+      <th>Rank</th>
       <th>Name</th>
       <th>Points</th>
       <th>Wins</th>
       <th>Losses</th>
       <th>Winrate</th>
     </tr>
-    {% for player in data %}
+    {% for rank, player in data %}
       <tr>
-        <td><a href"{{ url_for('summoner.summoner', name=player.name)}}">{{ player.name }}</a></td>
+        <td>{{ rank }}</td>
+        <td><a href="{{ url_for('summoner.summoner', name=player.name)}}">{{ player.name }}</a></td>
         <td>{{ player.points }}LP</td>
         <td>{{ player.wins }}</td>
         <td>{{ player.losses }}</td>

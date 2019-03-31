@@ -305,4 +305,4 @@ def get_leaderboard_data(leaderboard_group, queue_type):
 
     out.sort(key=lambda p: p.points)
     out.reverse()
-    return out
+    return enumerate(out, start=1)
