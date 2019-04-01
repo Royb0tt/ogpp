@@ -4,15 +4,15 @@
   </div>
   <div class="table-block champ-icon">
     <img src="{{ url_for('static', filename='img/champion/'+player.champion_played+'.png') }}"
-      width="40" height="40">
+      width="40" height="40" alt="{{ player.champion_played }}">
   </div>
   <div class='table-block summoner-spell'>
     <img src="{{ url_for('static', filename='img/sspells/' + player.spell1 + '.png') }}"
-      width="40" height="40">
+      width="40" height="40" alt="{{ player.spell1 }}" >
   </div>
   <div class='table-block summoner-spell'>
     <img src="{{ url_for('static', filename='img/sspells/' + player.spell2 + '.png') }}"
-      width="40" height="40">
+      width="40" height="40" alt="{{ player.spell2 }}">
   </div>
   <div class="table-block player-name">
     <a href="{{ url_for('summoner.summoner', name=player.name) }}">

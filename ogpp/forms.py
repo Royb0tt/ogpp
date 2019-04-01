@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 
-from .game_consts import CHAMPIONS
+from .game_consts import CHAMPIONS, QUEUE_TYPE
 
 
 class SummonerSearchForm(FlaskForm):
@@ -39,15 +39,22 @@ class LeaderboardSelectForm(FlaskForm):
 
 
 SUMMONER_OPTIONS = [(champ, champ.title()) for champ in CHAMPIONS.values()]
-SUMMONER_OPTIONS.append(('all', 'All champions'))
+SUMMONER_OPTIONS.insert(0, (('all', 'All Champions')))
+
+QUEUE_OPTIONS = [(choice, choice) for choice in QUEUE_TYPE.values()]
+QUEUE_OPTIONS.insert(0, (('all', 'All Game Modes')))
 
 
-# To be used when refactoring the summoner view
 class SummonerSelectForm(FlaskForm):
     champions = SelectField(
         'Filter By Champion',
         choices=SUMMONER_OPTIONS,
         default='all'
     )
-    queues = ''
+
+    queues = SelectField(
+        'Filter By Queue',
+        choices=QUEUE_OPTIONS,
+        default='all'
+    )
     submit = SubmitField('Filter')

@@ -2,83 +2,86 @@
 
 {% block content %}
 <div id="main-container">
+
   <div id="side-container">
-  <div id="sidebar">
-    <div class="refresh-button">
-      <a href="{{ url_for('summoner.refresh', name=summoner.name) }}">Update Info</a>
-    </div>
-    <div class="icon">
-      <img src="{{ url_for('static', filename=summoner.profile_icon) }}" 
-        height="75" width="75">
-    </div>
-    <div class="name-and-level">
-      <p class="player">{{ summoner.name }}</p>
-      <p class="level">Level: {{ summoner.level }}</p>
-    </div>
-    <div class="ranking-icon">
-      <p>{{ summoner.rank }}</p>
-      <p>{{ summoner.points }}</p>
-      <p>{{ ranked_stats.win_loss }}</p>
-      <p>{{ ranked_stats.win_ratio }}</p>
-    </div>
-    {% if ranked_stats.champions %}
-      <p>Overview of Ranked Champions</p>
-      {% for champ in ranked_stats.champions %}
-        <div class="per-champion-info">
-          <div class="champion-portrait">
-            <img src="{{ url_for('static', filename=champ.img) }}" width="65", height="65">
+    <div id="sidebar">
+      <div class="refresh-button">
+        <a href="{{ url_for('summoner.refresh', name=summoner.name) }}">Update Info</a>
+      </div>
+      <div class="icon">
+        <img src="{{ url_for('static', filename=summoner.profile_icon) }}" 
+          height="75" width="75">
+      </div>
+      <div class="name-and-level">
+        <p class="player">{{ summoner.name }}</p>
+        <p class="level">Level: {{ summoner.level }}</p>
+      </div>
+      <div class="ranking-icon">
+        <p>{{ summoner.rank }}</p>
+        <p>{{ summoner.points }}</p>
+        <p>{{ ranked_stats.win_loss }}</p>
+        <p>{{ ranked_stats.win_ratio }}</p>
+      </div>
+      {% if ranked_stats.champions %}
+        <p>Overview of Ranked Champions</p>
+        {% for champ in ranked_stats.champions %}
+          <div class="per-champion-info">
+            <div class="champion-portrait">
+              <img src="{{ url_for('static', filename=champ.img) }}" width="65", height="65">
+            </div>
+            <div class="numerical-statistics">
+              <p class="ns-text">{{ champ.win_rate }}</p>
+              <p class="ns-text">{{ champ.avg_kda }} KDA</p>
+              <p class="ns-text">{{ champ.total_played }} Games</p>
+            </div>
           </div>
-          <div class="numerical-statistics">
-            <p class="ns-text">{{ champ.win_rate }}</p>
-            <p class="ns-text">{{ champ.avg_kda }} KDA</p>
-            <p class="ns-text">{{ champ.total_played }} Games</p>
-          </div>
-        </div>
-      {% endfor %}
-    {% endif %}
-  </div>
+        {% endfor %}
+      {% endif %}
+    </div>
   </div>
 
   <div id="content-container">
-  <div id="main">
-
-    <div id="content-tabs">
-      <span>Filter By:</span>
-      <span class="tab-choice tab-left">
-        <a href="{{ url_for('summoner.summoner', name=summoner.name) }}">All Games</a>
-      </span>
-      <span class="tab-choice tab-left">
-        <a href="{{ url_for('summoner.ranked_games', name=summoner.name) }}">Ranked Games</a>
-      </span>
-      <span class="tab-choice tab-right">
-        <a href="{{ url_for('summoner.masteries', name=summoner.name) }}">View Champion Masteries</a>
-      </span>
-    </div>
-
-    {% for match in matches %}
-      <div class="match-box">
-        <div class="blueteam-container">
-          {% for player in match.blue_side %}
-            {% include '_blue_player_table_entry.html' %} 
-          {% endfor %}
-        </div>
-        <div class="redteam-container">
-          {% for player in match.red_side %}
-            {% include '_red_player_table_entry.html' %}
-          {% endfor %}
-        </div>
-        <p class="match-date-text">{{ match.date }} -- {{ match.queue_type }}</p>
-        {% if match.win == 'Victory' %}
-          <p class="victory-text" id="win">{{ match.win }}</p>
-        {% else %}
-          <p class="victory-text" id="loss">{{ match.win }}</p>
-        {% endif %}
+    <div id="main">
+      <div id="content-tabs">
+        <span class="tab-choice tab-left">
+          <form action="" method="post" novalidate>
+            {{ select_form.hidden_tag() }}
+            <span>{{ select_form.champions.label }}:</span>
+            <span>{{ select_form.champions() }}</span>
+            <span>{{ select_form.queues.label }}:</span>
+            <span>{{ select_form.queues() }}</span>
+            <span>{{ select_form.submit() }}</span>
+          </form>
+        </span>
+        <span class="tab-choice tab-right">
+          <a href="{{ url_for('summoner.masteries', name=summoner.name) }}">View Champion Masteries</a>
+        </span>
       </div>
-    {% endfor %}
 
-    {% include '_paginate_urls.html' %}
+      {% for match in matches %}
+        <div class="match-box">
+          <div class="blueteam-container">
+            {% for player in match.blue_side %}
+              {% include '_blue_player_table_entry.html' %} 
+            {% endfor %}
+          </div>
+          <div class="redteam-container">
+            {% for player in match.red_side %}
+              {% include '_red_player_table_entry.html' %}
+            {% endfor %}
+          </div>
+          <p class="match-date-text">{{ match.date }} -- {{ match.queue_type }}</p>
+          {% if match.win == 'Victory' %}
+            <p class="victory-text" id="win">{{ match.win }}</p>
+          {% else %}
+            <p class="victory-text" id="loss">{{ match.win }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
 
+      {% include '_paginate_urls.html' %}
+    </div>
   </div>
-  </div>
+
 </div>
 {% endblock %}

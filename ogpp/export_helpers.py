@@ -10,37 +10,34 @@ from .db_helpers import grab_summoner, get_match_stats
 
 from .models import Match, ByReferenceMatch
 from .game_consts import QUEUE_TYPE, CHAMPIONS, _TEAMS
+from .game_consts import _QUEUE_TYPE as REVERSE_QUEUE_LOOKUP
 from . import game_api
 
 # blacklist certain properties in the model object's __dict__
 BLACKLIST = ['_sa_instace_state']
 
 
-def generate_summoner_page_context(summoner_name, page, view):
+def generate_summoner_page_context(summoner_name, page, champion, queue):
     '''
     page is the current counter in a pagination sequence
     view is the name of the view function being used here
     '''
+    view = 'summoner.summoner'
     kwargs = {'name': summoner_name}
 
     summoner = grab_summoner(summoner_name)
 
-    if view == 'summoner.ranked_games':
-        match_refs = summoner.match_history.filter(
-            ByReferenceMatch.game_mode.in_([440, 420])
-        ).order_by(
-            ByReferenceMatch.timestamp.desc()
-        ).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
-        )
-    else:  # default get all game types
-        match_refs = summoner.match_history.order_by(
-            ByReferenceMatch.timestamp.desc()
-        ).paginate(
-            page, current_app.config['POSTS_PER_PAGE'], False
-        )
+    if queue == 'all':
+        match_refs = summoner.match_history
+    else:
+        match_refs = summoner.match_history.filter_by(game_mode=REVERSE_QUEUE_LOOKUP[queue])
 
-    # final_query = match_refs.paginate(page, current_app.conf['POSTS_PER_PAGE'])
+    if champion == 'all':
+        pass
+    else:
+        match_refs = match_refs.filter_by(champion_played=champion)
+
+    match_refs = match_refs.paginate(page, current_app.config['POSTS_PER_PAGE'])
 
     matches = get_match_stats(match_refs, page)
     matches = make_matches_exportable(matches, summoner.name)
