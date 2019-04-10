@@ -1,11 +1,13 @@
 alembic==1.0.7
 awesome-slugify==1.6.5
 beautifulsoup4==4.7.1
+blinker==1.4
 bs4==0.0.1
 certifi==2018.11.29
 chardet==3.0.4
 Click==7.0
 Flask==1.0.2
+Flask-Mail==0.9.1
 Flask-Migrate==2.4.0
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
