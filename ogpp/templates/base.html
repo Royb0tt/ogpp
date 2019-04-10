@@ -10,37 +10,8 @@
 
   <body>
 
-      <div id="page-top">
-        <span class="nav-ele" id="nav-left">
-          {% if index %}
-            <a href="{{ url_for('leaderboard.leaderboard') }}">
-                Player Leaderboards
-              </a>
-          {% else %}
-            <a href="{{ url_for('home.index') }}">Go Home</a>
-            <a href="{{ url_for('leaderboard.leaderboard') }}">
-                Player Leaderboards
-              </a>
-          {% endif %}
-        </span>
-        <span class="nav-ele" id="nav-right">
-          <div id="nav-search">
-            {% if index %}
-              <p>Index Nav here</p>
-            {% else %}
-              <form action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                <p style="text-align; right;">
-                {{ form.summoner(size=35, placeholder="Search for a player") }}
-                {{ form.submit(class_='submit-button') }}
-                </p>
-              </form> 
-            {% endif %}
-          </div>
-        </span>
-      </div>
-      <hr>
-        
+    {% include 'page_top/base_page_top.html' %}
+
     {% block content %}{% endblock %}
 
 

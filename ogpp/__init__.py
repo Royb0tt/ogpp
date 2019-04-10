@@ -1,14 +1,15 @@
 import logging
 import string
-from flask import Flask
-from slugify import Slugify, slugify_unicode
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from .riot_api import RiotAPI
-from config import Config
-
 import os
 
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_mail import Mail
+from slugify import Slugify, slugify_unicode
+
+from .riot_api import RiotAPI
+from config import Config
 
 VALID_ASCII = string.printable[62:]
 
@@ -43,24 +44,27 @@ game_api = RiotAPI(Config.RIOT_API_KEY)
 
 db = SQLAlchemy()
 migrate = Migrate()
+mail = Mail()
 
 
 def create_app(config=Config):
     app = Flask(__name__)
     app.config.from_object(config)
+
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)
+
     if app.config['LOG_TO_STDOUT']:
+        # hosting via heroku requires this config to be toggled
         stream_handler = logging.StreamHandler()
         stream_handler.setLevel(logging.DEBUG)
         app.logger.addHandler(stream_handler)
 
-    from ogpp import routes
-    app.register_blueprint(routes.summoner_bp)
+    from . import routes
+    app.register_blueprint(routes.error_bp)
     app.register_blueprint(routes.index_bp)
+    app.register_blueprint(routes.summoner_bp)
     app.register_blueprint(routes.leaderboard_bp)
 
     return app
-
-
-# from ogpp import routes, models

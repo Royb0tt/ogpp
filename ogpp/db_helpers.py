@@ -2,7 +2,8 @@
    from the web api to the database.
 
     TODO: refector get_highest_rank() as it only picks up a single rank now
-    TODO: make page that shows win percentage of champion played by all players
+    TODO: make page that shows avg win percentage of champion played by all players in db
+
 '''
 from types import SimpleNamespace
 from .models import Summoner, ByReferenceMatch, Match, Player
@@ -68,18 +69,19 @@ def get_highest_rank(summoner_id):
 def serialize_summoner_to_db(summoner, indexed_name):
     summoner = SimpleNamespace(**summoner)
     rank = get_highest_rank(summoner.id)
-    summoner = Summoner(name=summoner.name, indexed_name=indexed_name,
-                        level=summoner.summonerLevel,
-                        profile_icon=summoner.profileIconId,
-                        account_id=summoner.accountId,
-                        summoner_id=summoner.id,
-                        highest_rank=rank.tier,
-                        rank_division=rank.rank,
-                        points=rank.leaguePoints,
-                        wins=rank.wins, losses=rank.losses,
-                        ranked_mode=rank.queueType,
-                        position=rank.position
-                        )
+    summoner = Summoner(
+        name=summoner.name, indexed_name=indexed_name,
+        level=summoner.summonerLevel,
+        profile_icon=summoner.profileIconId,
+        account_id=summoner.accountId,
+        summoner_id=summoner.id,
+        highest_rank=rank.tier,
+        rank_division=rank.rank,
+        points=rank.leaguePoints,
+        wins=rank.wins, losses=rank.losses,
+        ranked_mode=rank.queueType,
+        position=rank.position
+    )
     return summoner
 
 
@@ -144,7 +146,8 @@ def update_summoner_info(summoner):
 
 
 def update_summoner_page(summoner_name):
-    summoner = Summoner.query.filter_by(indexed_name=summoner_name).first()
+    indexed_name = sanitize_name(summoner_name)
+    summoner = Summoner.query.filter_by(indexed_name=indexed_name).first()
     update_match_history(summoner)
     update_summoner_info(summoner)
 
@@ -210,18 +213,35 @@ def serialize_player_to_db(player, match):
 
     rank = get_rank(player)
 
-    player = Player(game_context=match, name=player.summonerName,
-                    indexed_name=indexed_name,
-                    current_rank=rank,
-                    champion_played=CHAMPIONS[player.championId],
-                    champion_level=stats.champLevel,
-                    win=stats.win, team_id=player.teamId,
-                    item1=stats.item0, item2=stats.item1, item3=stats.item2,
-                    item4=stats.item3, item5=stats.item4, item6=stats.item5,
-                    item7=stats.item6,
-                    kills=stats.kills, deaths=stats.deaths, assists=stats.assists,
-                    gold_earned=stats.goldEarned, gold_spent=stats.goldSpent,
-                    spell1=SUMMONER_SPELLS[player.spell1Id], spell2=SUMMONER_SPELLS[player.spell2Id])
+    try:
+        champion_played = CHAMPIONS[player.championId]
+    except KeyError:
+        champion_played = player.championId
+
+    try:
+        spell1 = SUMMONER_SPELLS[player.spell1Id]
+    except KeyError:
+        spell1 = SUMMONER_SPELLS[0]
+
+    try:
+        spell2 = SUMMONER_SPELLS[player.spell2Id]
+    except KeyError:
+        spell2 = SUMMONER_SPELLS[0]
+
+    player = Player(
+        game_context=match, name=player.summonerName,
+        indexed_name=indexed_name,
+        current_rank=rank,
+        champion_played=champion_played,
+        champion_level=stats.champLevel,
+        win=stats.win, team_id=player.teamId,
+        item1=stats.item0, item2=stats.item1, item3=stats.item2,
+        item4=stats.item3, item5=stats.item4, item6=stats.item5,
+        item7=stats.item6,
+        kills=stats.kills, deaths=stats.deaths, assists=stats.assists,
+        gold_earned=stats.goldEarned, gold_spent=stats.goldSpent,
+        spell1=spell1, spell2=spell2
+    )
     return player
 
 

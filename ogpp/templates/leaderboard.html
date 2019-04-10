@@ -3,9 +3,9 @@
 {% block content %}
   <form action="" method="post" novalidate>
     {{ select_form.hidden_tag() }}
-    <span>{{ select_form.queues.label }}</span>
+    <span>{{ select_form.queues.label }}:</span>
     <span>{{ select_form.queues() }}</span>
-    <span>{{ select_form.groups.label }}</span>
+    <span>{{ select_form.groups.label }}:</span>
     <span>{{ select_form.groups() }}</span>
     <span>{{ select_form.submit() }}</span>
   </form>

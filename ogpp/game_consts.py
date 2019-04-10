@@ -187,7 +187,8 @@ _QUEUE_TYPE = {
     'ARURF': 900,
     'AI_INTERMEDIATE': 850,
     'TWISTED_TREELINE_BLIND': 460,
-    'SR_BLIND': 430
+    'SR_BLIND': 430,
+    'COOP AI INTRO': 830
 }
 
 QUEUE_TYPE = {v: k for k, v in _QUEUE_TYPE.items()}

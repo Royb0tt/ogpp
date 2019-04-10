@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div id="contact-form">
+    {% if success %}
+      <p>Email Sent Successfully!</p>
+    {% else %}
+      <h2>We'd Like To Hear From You!</h2>
+      <form action="" method=post novalidate>
+        {{ contact_form.hidden_tag() }}
+
+        {{ contact_form.name.label }}
+        {{ contact_form.name() }}
+        {% for error in contact_form.name.errors %}
+          <div class="flash">[{{ error }}]</div>
+        {% endfor %}
+
+        {{ contact_form.email.label }}
+        {{ contact_form.email() }}
+        {% for error in contact_form.email.errors %}
+          <div class="flash">[{{ error }}]</div>
+        {% endfor %}
+
+        {{ contact_form.subject.label }}
+        {{ contact_form.subject() }}
+        {% for error in contact_form.subject.errors %}
+          <div class="flash">[{{ error }}]</div>
+        {% endfor %}
+
+        {{ contact_form.message.label }}
+        {{ contact_form.message() }}
+        {% for error in contact_form.message.errors %}
+          <div class="flash">[{{ error }}]</div>
+        {% endfor %}
+
+        {{ contact_form.submit(class_='submit-button') }}
+      </form>
+    {% endif %}
+  </div>
+{% endblock %}

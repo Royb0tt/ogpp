@@ -1,0 +1,55 @@
+<div id="page-top">
+  <span class="nav-ele" id="nav-left">
+    <div class="nav-block">
+      <p class="nav-text">
+        <a href="{{ url_for('home.index') }}">Home</a>
+      </p>
+    </div>
+    <div class="nav-block">
+      <p class="nav-text">
+        <a href="{{ url_for('leaderboard.leaderboard') }}">Leaderboards</a>
+      </p>
+    </div>
+    <div class="nav-block">
+      <p class="nav-text">
+        <a href="#">Guides</a>
+      </p>
+    </div>
+  </span>
+    <span class="nav-ele" id="nav-right">
+      {% if index %}
+        <div class="nav-block">
+          <p class="nav-text">
+            <a href="{{ url_for('home.about') }}">About</a>
+          </p>
+        </div>
+        <div class="nav-block">
+          <p class="nav-text">
+            <a href="{{ url_for('home.contact') }}">Contact</a>
+          </p>
+        </div>
+      {% else %}
+        {% if summoner_form %}
+          <div id="nav-search">
+            <form action="" method="post" novalidate>
+              {{ summoner_form.hidden_tag() }}
+              <p style="text-align; right;">
+                {{ summoner_form.summoner(size=35, placeholder="Search for a player") }}
+                {{ summoner_form.submit(class_='submit-button') }}
+              </p>
+            </form>
+          </div>
+        {% endif %}
+          <div class="nav-block">
+            <p class="nav-text">
+              <a href="{{ url_for('home.about') }}">About</a>
+            </p>
+          </div> 
+          <div class="nav-block">
+            <p class="nav-text">
+              <a href="{{ url_for('home.contact') }}">Contact</a>
+            </p>
+          </div>
+      {% endif %}
+    </span>
+</div>

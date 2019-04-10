@@ -100,14 +100,23 @@ class RiotAPI:
     def get_match_history_list(self, account_id, end_index=None,
                                queue_type=None, champion=None,
                                season=13):
-        '''Get the match history of the current summoner.
-        by default, get matches from last 20(end_index param).
-        will add more optional parameters in the future maybe.
-        Other params:
-            -champion: STR, filter by the champion name which
-             we will convert to its in-game id.
-            -queue_type: INT, filter by game mode.
-            For info on queue type, refer to game_consts.py
+        '''
+        Get the match history of the current summoner.
+
+        args
+        account_id -> str
+            : summoner account id that is a valid encrypted hash string.
+        champion -> str
+            : name of the champion.
+        queue_type -> int
+            : the queue type's id representation.
+        end_index -> int
+            : the upper limit of requested matches.
+        season -> int
+            : filter matches by season number.
+            : the current season(2019) is season 2013.
+            : google riot's game constants for more info on exactly how
+            : game seasons are annotated.
         '''
         params = {}
         if end_index:

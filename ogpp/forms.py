@@ -1,19 +1,20 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, SelectField, TextAreaField
+from wtforms.validators import DataRequired, Email
 
 from .game_consts import CHAMPIONS, QUEUE_TYPE
+
+
+SUMMONER_OPTIONS = [(champ, champ.title()) for champ in CHAMPIONS.values()]
+SUMMONER_OPTIONS.insert(0, (('all', 'All Champions')))
+
+QUEUE_OPTIONS = [(choice, choice.title().replace('_', ' ')) for choice in QUEUE_TYPE.values()]
+QUEUE_OPTIONS.insert(0, (('all', 'All Game Modes')))
 
 
 class SummonerSearchForm(FlaskForm):
     summoner = StringField('', validators=[DataRequired()])
     submit = SubmitField('Search')
-
-
-class ChampionSelectForm(FlaskForm):
-    champions = SelectField('Filter By Champion',
-                            choices=[(champ, champ.title()) for champ in CHAMPIONS.values()])
-    submit = SubmitField('Filter')
 
 
 class LeaderboardSelectForm(FlaskForm):
@@ -38,13 +39,6 @@ class LeaderboardSelectForm(FlaskForm):
     submit = SubmitField('Filter')
 
 
-SUMMONER_OPTIONS = [(champ, champ.title()) for champ in CHAMPIONS.values()]
-SUMMONER_OPTIONS.insert(0, (('all', 'All Champions')))
-
-QUEUE_OPTIONS = [(choice, choice) for choice in QUEUE_TYPE.values()]
-QUEUE_OPTIONS.insert(0, (('all', 'All Game Modes')))
-
-
 class SummonerSelectForm(FlaskForm):
     champions = SelectField(
         'Filter By Champion',
@@ -58,3 +52,11 @@ class SummonerSelectForm(FlaskForm):
         default='all'
     )
     submit = SubmitField('Filter')
+
+
+class ContactForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired("Enter a name.")])
+    email = StringField('Email', validators=[DataRequired("Email cannot be empty."), Email()])
+    subject = StringField('Subject', validators=[DataRequired("Subject Cannot be empty.")])
+    message = TextAreaField('Message', validators=[DataRequired("Message cannot be empty.")])
+    submit = SubmitField('Send', validators=[DataRequired()])

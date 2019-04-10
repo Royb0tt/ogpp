@@ -1,0 +1,22 @@
+<!--what the regular page navigation should be-->
+{% if summoner_form %}
+  <div id="nav-search">
+    <form action="" method="post" novalidate>
+      {{ summoner_form.hidden_tag() }}
+      <p style="text-align; right;">
+        {{ summoner_form.summoner(size=35, placeholder="Search for a player") }}
+        {{ summoner_form.submit(class_='submit-button') }}
+      </p>
+    </form>
+  </div>
+{% endif %}
+<div class="nav-block">
+  <p class="nav-text">
+    <a href="{{ url_for('home.about') }}">About</a>
+  </p>
+</div> 
+<div class="nav-block">
+  <p class="nav-text">
+    <a href="{{ url_for('home.contact') }}">Contact</a>
+  </p>
+</div>

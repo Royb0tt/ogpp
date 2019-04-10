@@ -9,4 +9,5 @@ venv/
 ogpp/static/img
 ogpp/infod.py
 ogpp/get_tasks.py
+ogpp/routes_old.py
 dev_main.py

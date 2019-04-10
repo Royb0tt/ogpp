@@ -9,7 +9,7 @@ from flask import url_for, current_app
 from .db_helpers import grab_summoner, get_match_stats
 
 from .models import Match, ByReferenceMatch
-from .game_consts import QUEUE_TYPE, CHAMPIONS, _TEAMS
+from .game_consts import CHAMPIONS, _TEAMS
 from .game_consts import _QUEUE_TYPE as REVERSE_QUEUE_LOOKUP
 from . import game_api
 
@@ -20,10 +20,10 @@ BLACKLIST = ['_sa_instace_state']
 def generate_summoner_page_context(summoner_name, page, champion, queue):
     '''
     page is the current counter in a pagination sequence
-    view is the name of the view function being used here
+    champion & queue are args obtained as url query keywords(default: 'all')
     '''
     view = 'summoner.summoner'
-    kwargs = {'name': summoner_name}
+    paginate_kwargs = {'name': summoner_name}
 
     summoner = grab_summoner(summoner_name)
 
@@ -31,13 +31,19 @@ def generate_summoner_page_context(summoner_name, page, champion, queue):
         match_refs = summoner.match_history
     else:
         match_refs = summoner.match_history.filter_by(game_mode=REVERSE_QUEUE_LOOKUP[queue])
+        paginate_kwargs['queue'] = queue
 
     if champion == 'all':
         pass
     else:
         match_refs = match_refs.filter_by(champion_played=champion)
+        paginate_kwargs['champion'] = champion
 
-    match_refs = match_refs.paginate(page, current_app.config['POSTS_PER_PAGE'])
+    match_refs = match_refs.order_by(
+        ByReferenceMatch.timestamp.desc()
+    ).paginate(
+        page, current_app.config['POSTS_PER_PAGE']
+    )
 
     matches = get_match_stats(match_refs, page)
     matches = make_matches_exportable(matches, summoner.name)
@@ -49,24 +55,28 @@ def generate_summoner_page_context(summoner_name, page, champion, queue):
     page_items.ranked_stats = get_ranked_stats(summoner)
     page_items.summoner = make_summoner_exportable(summoner)
     page_items.matches = matches
-    page_items.page_urls = paginate(match_refs, view, **kwargs)
+    page_items.page_urls = make_paginate(match_refs, view, **paginate_kwargs)
     page_items.title = title
 
     return page_items
 
 
-def paginate(paginatable, view, **kwargs):
+def make_paginate(paginatable, view, **kwargs):
     '''
     generate a pagination sequence to be rendered on webpage contexts
     that require it.
 
-    page_context should be an html file, page is the current page.
-    paginatable should be a pagination object generated from sqlalchemy.
-    kwargs are extra keywords needed for the page_context.
+    args
+    view -> str
+        : the string representation of the view name used in
+        : flask's url_for() function i.e. url_for(<view_name>).
+    page -> int
+        : the current page of the paginatable's sequence.
+    paginatable -> SQLAlchemy pagination object
+        : a pagination object generated from sqlalchemy.
+    kwargs -> dict
+        : extra keywords needed for the page context.
     '''
-
-    # preserve_kwargs = **kwargs
-
     paginate_list = []
 
     k = paginatable.page - 2  # lower limit
@@ -91,9 +101,16 @@ def paginate(paginatable, view, **kwargs):
         paginate_list.append(page)
         k += 1
 
+    prev = url_for(view, page=paginatable.prev_num, **kwargs) \
+        if paginatable.has_prev else None
+    nxt = url_for(view, page=paginatable.next_num, **kwargs) \
+        if paginatable.has_next else None
+
     pages = SimpleNamespace()
     pages.first = url_for(view, page=1, **kwargs)
     pages.last = url_for(view, page=max_pages, **kwargs)
+    pages.prev = prev
+    pages.next = nxt
     pages.page_list = paginate_list
 
     return pages
@@ -128,8 +145,6 @@ def make_matches_exportable(matches, summoner_name):
         # get team sides
         m.blue_side = get_team(m.players, side_id=_TEAMS['blue'])
         m.red_side = get_team(m.players, side_id=_TEAMS['red'])
-        m.queue_type = QUEUE_TYPE[match.game_mode]
-
         m.queue_type = match.queue_type
 
         m.win = is_win_or_loss(match, summoner_name)
@@ -198,16 +213,6 @@ def get_ranked_stats(summoner):
         wins = 0
 
         for match in queried_matches:
-            # m = Match.query.filter_by(match_id=match.match_id).first()
-            # if m is None:
-                # this will be questionable
-                # it must be worth deciding if its better
-                # to calculate this all at once or on the fly
-                # though it certainly seems better to do it
-                # on the fly.
-                # m = game_api.get_match_stats(match.match_id)
-                # m = add_match_to_db(m, match.timestamp)
-                # continue
             player_instance = match.participants.filter_by(
                 name=summoner.name).first()
             total_avg_kdas += player_instance.avg_kda

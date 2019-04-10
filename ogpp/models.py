@@ -1,10 +1,17 @@
+'''
+Database entities
+
+TODO: if this file gets too long, consider the possibility of segregating
+      the models defined here into several _model.py files according
+      to their roles
+
+      for example, one model file will be about accounts, other will be about game data
+'''
+
 from .game_consts import _QUEUE_TYPE as Q_TYPE
 from .game_consts import QUEUE_TYPE
 from datetime import datetime
 from ogpp import db
-'''
-Database entities
-'''
 
 
 class Summoner(db.Model):
