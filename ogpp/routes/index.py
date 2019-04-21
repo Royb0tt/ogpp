@@ -1,6 +1,6 @@
 from flask import url_for, Blueprint, current_app, render_template, redirect
 from ..forms import SummonerSearchForm, ContactForm
-from ..email_helpers import send_email
+from ..helpers import send_email
 
 
 index_bp = Blueprint('home', __name__)

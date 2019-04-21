@@ -1,11 +1,13 @@
+'''TODO: Handle adding summoner form to views better'''
+
 from functools import wraps
 
 from flask import Blueprint, redirect, url_for, request, render_template
 
 from ..forms import SummonerSearchForm, SummonerSelectForm
-from ..export_helpers import generate_summoner_page_context, get_champion_masteries
-from ..db_helpers import update_summoner_page
-from .. import slug
+from ..helpers import generate_summoner_page_context, get_champion_masteries
+from ..helpers import update_summoner_page
+from ..helpers import slug
 
 summoner_bp = Blueprint('summoner', __name__, url_prefix='/summoner')
 

@@ -62,12 +62,12 @@
         <div class="match-box">
           <div class="blueteam-container">
             {% for player in match.blue_side %}
-              {% include 'summoner_page_addon/_blue_player_table_entry.html' %} 
+              {% include 'summoner/_blue_player_table_entry.html' %} 
             {% endfor %}
           </div>
           <div class="redteam-container">
             {% for player in match.red_side %}
-              {% include 'summoner_page_addon/_red_player_table_entry.html' %}
+              {% include 'summoner/_red_player_table_entry.html' %}
             {% endfor %}
           </div>
           <p class="match-date-text">{{ match.date }} -- {{ match.queue_type }}</p>

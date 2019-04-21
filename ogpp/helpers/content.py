@@ -10,7 +10,7 @@ from .storage import grab_summoner, get_match_stats
 from ..models import Match, ByReferenceMatch
 from ..game import CHAMPIONS, _TEAMS
 from ..game import _QUEUE_TYPE as REVERSE_QUEUE_LOOKUP
-from .. import game_api
+from ..game import api as riot_api
 
 # blacklist certain properties in the model object's __dict__
 BLACKLIST = ['_sa_instace_state']
@@ -253,7 +253,7 @@ def get_ranked_stats(summoner):
 
 def get_champion_masteries(summoner_name):
     summoner = grab_summoner(summoner_name)
-    masteries = game_api.get_summoner_mastery(summoner.summoner_id)
+    masteries = riot_api.get_summoner_mastery(summoner.summoner_id)
 
     out = []
 
@@ -285,7 +285,7 @@ def last_recently_played(summoner, champ_name):
 
 
 def get_leaderboard_data(leaderboard_group, queue_type):
-    leaderboard = game_api.get_leaderboard(leaderboard_group, queue_type)['entries']
+    leaderboard = riot_api.get_leaderboard(leaderboard_group, queue_type)['entries']
 
     out = []
     for player in leaderboard:

@@ -6,12 +6,53 @@ TODO: if this file gets too long, consider the possibility of segregating
       to their roles
 
       for example, one model file will be about accounts, other will be about game data
-'''
 
-from .game_consts import _QUEUE_TYPE as Q_TYPE
-from .game_consts import QUEUE_TYPE
+TODO: implement website user
+'''
 from datetime import datetime
-from ogpp import db
+
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from .game import _QUEUE_TYPE, QUEUE_TYPE
+from . import db
+
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(32), index=True, unique=True)
+    email = db.Column(db.String(64), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
+    join_date = db.Column(db.DateTime, default=datetime.utcnow)
+    about_me = db.Column(db.String(140), default="There's nothing here yet")
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+
+class Admin(User):
+    '''do something with this'''
+    pass
+
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    title = db.Column(db.String(128))
+    intro = db.Column(db.Text)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    # posts must be approved by admins
+    approved = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        if len(self.body) > 32:
+            text = self.body[:32] + '...'
+        return "<Author {}: {}>".format(self.author.username, text)
 
 
 class Summoner(db.Model):
@@ -58,7 +99,7 @@ class Summoner(db.Model):
 
     @property
     def ranked_games(self):
-        valid_queue_types = [Q_TYPE['RANKED_SOLO'], Q_TYPE['RANKED_FLEX']]
+        valid_queue_types = [_QUEUE_TYPE['RANKED_SOLO'], _QUEUE_TYPE['RANKED_FLEX']]
         ranked = self.match_history.filter(
             ByReferenceMatch.game_mode.in_(valid_queue_types)
         ).order_by(
@@ -95,7 +136,10 @@ class ByReferenceMatch(db.Model):
     timestamp = db.Column(db.Float)
 
     def __repr__(self):
-        return "ByReferenceMatch<ID: {0.match_id} Type:{0.queue_type}, of {0.summoner_context} playing: {0.champion_played}>".format(self)
+        return (
+            "ByReferenceMatch<ID: {0.match_id} Type:{0.queue_type}, "
+            "of {0.summoner_context} playing: {0.champion_played}>"
+        ).format(self)
 
     @property
     def date(self):
@@ -130,7 +174,8 @@ class Match(db.Model):
         compared to the other tables, we would be repeating entries
         to the table based on different summoners.
         This can prove to be disadvantageous, the only difference between the
-        redundant entries of the same match would be summoner contextual data(summoner id & champ id)
+        redundant entries of the same match would be
+        summoner contextual data(summoner id & champ id)
 
         So it would be fine if ByReferenceMatch had multiple redundant entries
         as the information they carry is relatively light
@@ -181,7 +226,9 @@ class Player(db.Model):
     that a summoner refers to general account information.
     The context of a player here describes an in-game entity
     that is tied to a specific game instance, this is distinct
-    from a summoner, as the context of a summoner is the account level information.
+    from a summoner, as the context of a summoner is
+    the account level information.
+
     This table will contain in-game related columns
     such as items as well as other in-game related stats.
     '''
@@ -190,7 +237,7 @@ class Player(db.Model):
 
     # summoner info
     name = db.Column(db.String(32))
-    indexed_name = db.Column(db.String(32))  # this is the name that should be used to look up queries related to a player
+    indexed_name = db.Column(db.String(32))
     current_rank = db.Column(db.String(20))
     # consider storing the champion as a string instead of it's id.
     champion_played = db.Column(db.String(20))
@@ -225,7 +272,10 @@ class Player(db.Model):
     # etc...
 
     def __repr__(self):
-        return "Player<{0.name}, playing {0.champion_played} level {0.champion_level} on team {0.team_id} of {0.game_context}>".format(self)
+        return (
+            "Player<{0.name}, playing {0.champion_played} "
+            "level {0.champion_level} on team {0.team_id} of {0.game_context}>"
+        ).format(self)
 
     @property
     def items(self):

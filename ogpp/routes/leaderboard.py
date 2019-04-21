@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, url_for, request, render_template
 from ..forms import LeaderboardSelectForm
-from ..export_helpers import get_leaderboard_data
+from ..helpers import get_leaderboard_data
 from .summoner import view_with_search_bar
 
 leaderboard_bp = Blueprint('leaderboard', __name__, url_prefix='/leaderboard')

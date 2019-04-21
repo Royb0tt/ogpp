@@ -8,7 +8,8 @@
 from types import SimpleNamespace
 from ..models import Summoner, ByReferenceMatch, Match, Player
 from ..game import CHAMPIONS, RANK_DIVISIONS, RANK_TIERS, SUMMONER_SPELLS
-from .. import db, game_api
+from ..game import api as riot_api
+from .. import db
 
 
 def sanitize_name(name):
@@ -25,7 +26,7 @@ def grab_summoner(name):
     indexed_name = sanitize_name(name)
     summoner = Summoner.query.filter_by(indexed_name=indexed_name).first()
     if summoner is None:
-        s = game_api.grab_summoner(name)
+        s = riot_api.grab_summoner(name)
         summoner = serialize_summoner_to_db(s, indexed_name)
         add_summoner_to_db(summoner)
         summoner = Summoner.query.filter_by(indexed_name=indexed_name).first()
@@ -48,7 +49,7 @@ def get_highest_rank(summoner_id):
        Param summoner takes a SimpleNamespace object representing the summoner obtained by the api.
        Returns a SimpleNamespace object representing the highest rank calculated
     '''
-    ranks = game_api.get_summoner_ranks(summoner_id)
+    ranks = riot_api.get_summoner_ranks(summoner_id)
     if not ranks:
         rank = SimpleNamespace()
         rank.tier = 'unranked'
@@ -86,7 +87,7 @@ def serialize_summoner_to_db(summoner, indexed_name):
 
 
 def populate_match_history(summoner):
-    match_history = game_api.get_match_history_list(summoner.account_id)['matches']
+    match_history = riot_api.get_match_history_list(summoner.account_id)['matches']
     for match in match_history:
         m = serialize_matchref_to_db(match, summoner)
         add_matchref_to_db(m)
@@ -103,7 +104,7 @@ def update_match_history(summoner):
     which when clicked will signal the app to call the game api and grab
     the latest games from riots database.
     '''
-    match_references = game_api.get_match_history_list(summoner.account_id)['matches']
+    match_references = riot_api.get_match_history_list(summoner.account_id)['matches']
     for match in match_references:
         # once we come across a match that is already in the database
         # we know we're up to date so break from the iteration
@@ -123,11 +124,11 @@ def update_summoner_info(summoner):
     which will update the summoner's general info such as current profile icon,
     rank, level, etc.
     '''
-    updated_info = game_api.grab_summoner(summoner.name)
+    updated_info = riot_api.grab_summoner(summoner.name)
     # if summoner.account_id != updated_info:
     # name change
     # get summoner by encrypted id
-    # game_api.grab_summoner(summoner.account_id)
+    # riot_api.grab_summoner(summoner.account_id)
     # update the database entry's old name to the new name
     s = SimpleNamespace(**updated_info)
     # update their level and displayed icon
@@ -176,7 +177,7 @@ def get_match_stats(matches, page_num=1):
     for match_ref in matches.items:
         match = Match.query.filter_by(match_id=match_ref.match_id).first()
         if not match:
-            match_from_api = game_api.get_match_stats(match_ref.match_id)
+            match_from_api = riot_api.get_match_stats(match_ref.match_id)
             match = add_match_to_db(match_from_api, match_ref.timestamp)
         else:
             for player in match.players:

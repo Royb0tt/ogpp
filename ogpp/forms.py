@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Email
 
-from .game_consts import CHAMPIONS, QUEUE_TYPE
+from .game import CHAMPIONS, QUEUE_TYPE
 
 
 SUMMONER_OPTIONS = [(champ, champ.title()) for champ in CHAMPIONS.values()]
