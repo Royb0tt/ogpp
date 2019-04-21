@@ -1,5 +1,4 @@
 import logging
-import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -7,11 +6,8 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
 
-from .game import RiotAPI
 from config import Config
 
-
-game_api = RiotAPI(os.environ.get('RIOT_API_KEY'))
 
 db = SQLAlchemy()
 migrate = Migrate()
