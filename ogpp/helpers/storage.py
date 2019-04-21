@@ -62,8 +62,9 @@ def get_highest_rank(summoner_id):
         return rank
 
     ranks = [SimpleNamespace(**rank) for rank in ranks]
-    highest_rank = max(ranks, key=lambda r: RANK_TIERS[r.tier] +
-                       RANK_DIVISIONS[r.rank] + r.leaguePoints)
+    highest_rank = max(ranks, key=lambda r:
+                       (RANK_TIERS[r.tier] * RANK_DIVISIONS[r.rank]) +
+                       r.leaguePoints)
     return highest_rank
 
 
